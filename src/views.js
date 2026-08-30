@@ -62,10 +62,22 @@ export function renderShell() {
       </aside>
 
       <footer class="site-footer">
+        <button type="button" id="install-btn" class="install-btn" hidden>
+          <i data-lucide="download" class="install-btn-icon" aria-hidden="true"></i>
+          <span data-i18n="installApp">Install</span>
+        </button>
+        <span id="install-sep" class="install-sep" hidden aria-hidden="true">·</span>
         <span data-i18n="author"></span>
         <span aria-hidden="true">©</span>
         <a id="author-link" href="https://arturbasak.dev" target="_blank" rel="noopener noreferrer" data-i18n="authorSite" data-i18n-suffix="opensNewTab"></a>
       </footer>
+
+      <div id="install-ios-hint" class="install-ios-hint" role="status" hidden>
+        <p id="install-ios-text" class="install-ios-text"></p>
+        <button type="button" id="install-ios-dismiss" class="install-ios-dismiss" aria-label="">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
     </div>
   `
 }

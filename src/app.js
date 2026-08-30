@@ -13,17 +13,25 @@ import {
   Timer,
   Circle,
   ArrowLeft,
+  Download,
+  X,
 } from 'lucide'
 import { LOCALES, BREATH_MODE_META, ELEMENT_META, sourceLinks } from './i18n.js'
 import { renderShell, renderHomeView, renderGuideView } from './views.js'
 import { BREATH_CYCLES } from './breathPhases.js'
 import { storageGet, storageSet } from './storage.js'
+import {
+  initInstallPrompt,
+  onInstallStateChange,
+  promptInstall,
+  dismissInstallHint,
+} from './install.js'
 
 if ('serviceWorker' in navigator) {
   registerSW({ immediate: true })
 }
 
-const ICONS = { Waves, TreePine, Sun, Wind, Moon, Play, Square, Box, Timer, Circle, ArrowLeft }
+const ICONS = { Waves, TreePine, Sun, Wind, Moon, Play, Square, Box, Timer, Circle, ArrowLeft, Download, X }
 
 const THEME_KEY = 'vydokh-theme'
 const ELEMENT_KEY = 'vydokh-element'
@@ -93,6 +101,11 @@ let authorName
 let authorSite
 let stopLabel
 let skipLink
+let installBtn
+let installSep
+let installIOSHint
+let installIOSText
+let installIOSDismiss
 let elementButtons
 let minuteButtons
 let breathButtons
@@ -149,6 +162,11 @@ function bindChrome() {
   authorName = document.querySelector('[data-i18n="author"]')
   authorSite = document.querySelector('[data-i18n="authorSite"]')
   skipLink = document.querySelector('.skip-link')
+  installBtn = document.querySelector('#install-btn')
+  installSep = document.querySelector('#install-sep')
+  installIOSHint = document.querySelector('#install-ios-hint')
+  installIOSText = document.querySelector('#install-ios-text')
+  installIOSDismiss = document.querySelector('#install-ios-dismiss')
   elementButtons = [...document.querySelectorAll('[data-element-id]')]
   minuteButtons = [...document.querySelectorAll('[data-minutes]')]
   breathButtons = [...document.querySelectorAll('[data-breath-id]')]
@@ -174,6 +192,18 @@ function bindChrome() {
   breathButtons.forEach((btn) => {
     btn.addEventListener('click', () => applyBreath(btn.dataset.breathId))
   })
+
+  if (installBtn) {
+    installBtn.addEventListener('click', () => {
+      void promptInstall()
+    })
+  }
+
+  if (installIOSDismiss) {
+    installIOSDismiss.addEventListener('click', () => {
+      dismissInstallHint()
+    })
+  }
 
   document.querySelectorAll('[data-nav]').forEach((link) => {
     link.addEventListener('click', (e) => {
@@ -336,6 +366,12 @@ function applyLocaleTexts() {
   if (twDesc) twDesc.setAttribute('content', t.metaDescription)
 
   if (skipLink) skipLink.textContent = t.skipToContent
+  if (installBtn) {
+    installBtn.querySelector('[data-i18n="installApp"]').textContent = t.installApp
+    installBtn.setAttribute('aria-label', t.installAppAria)
+  }
+  if (installIOSText) installIOSText.textContent = t.installIOSHint
+  if (installIOSDismiss) installIOSDismiss.setAttribute('aria-label', t.installDismiss)
   if (langCode) langCode.textContent = t.langCode
   if (langToggle) langToggle.setAttribute('aria-label', t.langToggle)
   updateThemeAria()
@@ -550,6 +586,23 @@ function stop(naturalEnd = false) {
   }
 }
 
+function updateInstallUI(state) {
+  const showPrompt = state.canPrompt
+  const showIOS = state.showIOSHint
+
+  if (installBtn) {
+    installBtn.hidden = !showPrompt
+    installBtn.classList.toggle('hidden', !showPrompt)
+  }
+  if (installSep) {
+    installSep.hidden = !showPrompt
+  }
+  if (installIOSHint) {
+    installIOSHint.hidden = !showIOS
+    installIOSHint.classList.toggle('hidden', !showIOS)
+  }
+}
+
 function init() {
   document.documentElement.lang = lang
   const app = document.querySelector('#app')
@@ -561,6 +614,9 @@ function init() {
   initBreath()
   renderView()
   applyLocaleTexts()
+  initInstallPrompt()
+  onInstallStateChange(updateInstallUI)
+  refreshIcons()
   try {
     history.replaceState({ route }, '', route === 'guide' ? '/guide' : '/')
   } catch {

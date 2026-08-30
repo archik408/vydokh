@@ -791,6 +791,87 @@ body {
   opacity: 0.75;
 }
 
+.install-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: opacity 150ms ease;
+}
+
+.install-btn:hover {
+  opacity: 0.75;
+}
+
+.install-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.install-btn-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.install-sep {
+  color: var(--fg-muted);
+}
+
+.install-ios-hint {
+  display: flex;
+  width: min(100%, 28rem);
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--fg-muted);
+}
+
+.install-ios-text {
+  flex: 1;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.install-ios-dismiss {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.install-ios-dismiss:hover {
+  color: var(--fg);
+}
+
+.install-ios-dismiss:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.install-ios-dismiss i {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .breath-pulse.is-active {
     animation: none;
@@ -802,7 +883,8 @@ body {
   .play-btn,
   .guide-link,
   .guide-back,
-  .site-footer a {
+  .site-footer a,
+  .install-btn {
     transition: none;
   }
 

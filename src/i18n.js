@@ -69,6 +69,10 @@ export const LOCALES = {
     author: 'Artur Basak',
     authorSite: 'arturbasak.dev',
     authorHref: 'https://arturbasak.dev',
+    installApp: 'Установить',
+    installAppAria: 'Установить приложение Vydokh',
+    installIOSHint: 'Установите приложение: «Поделиться» → Нажмите «Добавить на главный экран» / «Домой»',
+    installDismiss: 'Закрыть подсказку об установке',
     readInstructions: 'Перед началом прочтите <span class="guide-link-word">инструкцию</span>',
     guide: {
       pageTitle: 'Инструкция',
@@ -180,6 +184,10 @@ export const LOCALES = {
     author: 'Artur Basak',
     authorSite: 'arturbasak.dev',
     authorHref: 'https://arturbasak.dev',
+    installApp: 'Install',
+    installAppAria: 'Install Vydokh app',
+    installIOSHint: 'Install: tap Share, then Add to Home Screen',
+    installDismiss: 'Dismiss install hint',
     readInstructions: 'Read the <span class="guide-link-word">instructions</span> before you begin',
     guide: {
       pageTitle: 'Instructions',
