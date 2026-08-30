@@ -12,7 +12,13 @@ Mindful breathing and meditation web app — a calm 5–20 minute session with a
 
 ## Stack
 
-Vite · Tailwind CSS v4 · Lucide · vanilla JavaScript
+Vite · Tailwind CSS v4 · Lucide · Workbox (vite-plugin-pwa) · vanilla JavaScript
+
+## PWA
+
+Production builds register a Workbox service worker with **Offline First** and **CacheFirst** for pages, assets, fonts, and images. After the first visit the app shell works offline.
+
+Installable as a standalone app (manifest + icons).
 
 ## Develop
 
@@ -25,6 +31,8 @@ pnpm dev
 pnpm build
 pnpm preview
 ```
+
+`pnpm preview` serves the production build so you can verify the service worker.
 
 ## Author
 
