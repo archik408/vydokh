@@ -10,6 +10,7 @@ export default defineConfig({
       includeAssets: [
         'favicon.svg',
         'icons.svg',
+        'original-icon-removebg-preview.png',
         'robots.txt',
         'llms.txt',
         'pwa-192x192.png',
@@ -24,10 +25,8 @@ export default defineConfig({
         theme_color: '#faf8f5',
         background_color: '#faf8f5',
         display: 'standalone',
-        orientation: 'portrait',
         start_url: '/',
         scope: '/',
-        lang: 'en',
         categories: ['health', 'lifestyle', 'wellness'],
         icons: [
           {

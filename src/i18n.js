@@ -46,6 +46,14 @@ export const LOCALES = {
     metaDescription: 'Vydokh — осознанное дыхание и медитация',
     documentTitle: 'Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, nadi shodhana',
     themeToggle: 'Сменить тему',
+    themeLight: 'Светлая тема, переключить на тёмную',
+    themeDark: 'Тёмная тема, переключить на светлую',
+    appearance: 'Внешний вид',
+    languageAndTheme: 'Язык и тема',
+    skipToContent: 'Перейти к содержимому',
+    sessionStarted: 'Сессия началась',
+    sessionComplete: 'Сессия завершена',
+    opensNewTab: 'открывается в новой вкладке',
     langToggle: 'Switch to English',
     langCode: 'EN',
     start: 'Старт',
@@ -149,6 +157,14 @@ export const LOCALES = {
     metaDescription: 'Vydokh — mindful breathing and meditation',
     documentTitle: 'Vydokh — mindful breathing & meditation | Box 4×4, 4-7-8, nadi shodhana',
     themeToggle: 'Toggle theme',
+    themeLight: 'Light theme, switch to dark',
+    themeDark: 'Dark theme, switch to light',
+    appearance: 'Appearance',
+    languageAndTheme: 'Language and theme',
+    skipToContent: 'Skip to content',
+    sessionStarted: 'Session started',
+    sessionComplete: 'Session complete',
+    opensNewTab: 'opens in a new tab',
     langToggle: 'Переключить на русский',
     langCode: 'RU',
     start: 'Start',
@@ -268,11 +284,12 @@ export const ELEMENT_META = [
   { id: 'air', icon: 'wind', themeColorLight: '#ccfbf1', themeColorDark: '#0a1c1a' },
 ]
 
-export function sourceLinks(sources) {
+export function sourceLinks(sources, opensNewTab = '') {
+  const suffix = opensNewTab ? ` (${opensNewTab})` : ''
   return sources
     .map(
       (s) =>
-        `<a href="${s.url}" target="_blank" rel="noopener noreferrer" class="guide-source">${s.name}</a>`,
+        `<a href="${s.url}" target="_blank" rel="noopener noreferrer" class="guide-source" aria-label="${s.name}${suffix}">${s.name}</a>`,
     )
     .join('<span class="guide-source-sep">·</span>')
 }

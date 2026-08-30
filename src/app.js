@@ -16,6 +16,7 @@ import {
 } from 'lucide'
 import { LOCALES, BREATH_MODE_META, ELEMENT_META, sourceLinks } from './i18n.js'
 import { renderShell, renderHomeView, renderGuideView } from './views.js'
+import { BREATH_CYCLES } from './breathPhases.js'
 
 registerSW({ immediate: true })
 
@@ -30,6 +31,9 @@ const DEFAULT_ELEMENT = 'air'
 const DEFAULT_MINUTES = 5
 const DEFAULT_BREATH = 'deep'
 const MINUTES_OPTIONS = [5, 10, 15, 20]
+
+const prefersReducedMotion = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 function detectLang() {
   const stored = localStorage.getItem(LANG_KEY)
@@ -48,14 +52,21 @@ let remaining = durationSec
 let endsAt = 0
 let rafId = 0
 let currentBreathId = DEFAULT_BREATH
+let breathPhaseTimeout = 0
+let lastAnnouncedMinute = -1
+let sessionEndedNaturally = false
+let currentPhase = null
+let pendingFocusTarget = null
 
 let timerEl
+let sessionStatusEl
 let playBtn
 let stopBtn
 let breathStage
 let breathPulse
 let breathCenterIcon
 let breathGuide
+let breathGuideText
 let guideLink
 let themeToggle
 let langToggle
@@ -64,9 +75,7 @@ let authorLink
 let authorName
 let authorSite
 let stopLabel
-let guideInhale
-let guideHold
-let guideExhale
+let skipLink
 let elementButtons
 let minuteButtons
 let breathButtons
@@ -92,8 +101,27 @@ function getModeCopy(id) {
   return t.modes[id] ?? t.modes[DEFAULT_BREATH]
 }
 
+function phaseLabel(phase) {
+  if (phase === 'inhale') return t.inhale
+  if (phase === 'hold') return t.hold
+  return t.exhale
+}
+
 function refreshIcons(root = document) {
   createIcons({ icons: ICONS, attrs: { 'stroke-width': 1.75 }, root })
+}
+
+function announceStatus(message) {
+  if (!sessionStatusEl) return
+  sessionStatusEl.textContent = ''
+  requestAnimationFrame(() => {
+    sessionStatusEl.textContent = message
+  })
+}
+
+function focusMain() {
+  const main = document.querySelector('#main-content')
+  if (main) main.focus()
 }
 
 function bindChrome() {
@@ -103,6 +131,7 @@ function bindChrome() {
   authorLink = document.querySelector('#author-link')
   authorName = document.querySelector('[data-i18n="author"]')
   authorSite = document.querySelector('[data-i18n="authorSite"]')
+  skipLink = document.querySelector('.skip-link')
   elementButtons = [...document.querySelectorAll('[data-element-id]')]
   minuteButtons = [...document.querySelectorAll('[data-minutes]')]
   breathButtons = [...document.querySelectorAll('[data-breath-id]')]
@@ -141,23 +170,30 @@ function bindChrome() {
 
 function bindHome() {
   timerEl = document.querySelector('#timer')
+  sessionStatusEl = document.querySelector('#session-status')
   playBtn = document.querySelector('#play-btn')
   stopBtn = document.querySelector('#stop-btn')
   breathStage = document.querySelector('#breath-stage')
   breathPulse = document.querySelector('#breath-pulse')
   breathCenterIcon = document.querySelector('#breath-center-icon')
   breathGuide = document.querySelector('#breath-guide')
+  breathGuideText = document.querySelector('#breath-guide-text')
   guideLink = document.querySelector('#guide-link')
   stopLabel = document.querySelector('[data-i18n="stopLabel"]')
-  guideInhale = document.querySelector('[data-i18n="inhale"]')
-  guideHold = document.querySelector('[data-i18n="hold"]')
-  guideExhale = document.querySelector('[data-i18n="exhale"]')
 
   playBtn.addEventListener('click', start)
-  stopBtn.addEventListener('click', stop)
+  stopBtn.addEventListener('click', () => stop(false))
 
   updateOrbIcon()
   renderSession()
+
+  if (pendingFocusTarget === 'play') {
+    playBtn.focus()
+    pendingFocusTarget = null
+  } else if (pendingFocusTarget === 'stop') {
+    stopBtn.focus()
+    pendingFocusTarget = null
+  }
 }
 
 function renderView() {
@@ -165,7 +201,8 @@ function renderView() {
   if (!root) return
 
   t = LOCALES[lang]
-  root.innerHTML = route === 'guide' ? renderGuideView(t, sourceLinks) : renderHomeView(t)
+  const links = (sources) => sourceLinks(sources, t.opensNewTab)
+  root.innerHTML = route === 'guide' ? renderGuideView(t, links) : renderHomeView(t)
   document.documentElement.dataset.page = route
   refreshIcons()
 
@@ -174,7 +211,8 @@ function renderView() {
   } else {
     cancelAnimationFrame(rafId)
     rafId = 0
-    if (state === 'running') stop()
+    if (state === 'running') stop(false)
+    focusMain()
   }
 
   document.querySelectorAll('[data-nav]').forEach((link) => {
@@ -198,14 +236,43 @@ function navigate(nextRoute) {
     history.pushState({ route }, '', path)
     renderView()
     applyLocaleTexts()
+    focusMain()
   }
 
-  if (!document.startViewTransition) {
+  if (prefersReducedMotion() || !document.startViewTransition) {
     update()
     return
   }
 
   document.startViewTransition(update)
+}
+
+function stopBreathPhases() {
+  clearTimeout(breathPhaseTimeout)
+  breathPhaseTimeout = 0
+  currentPhase = null
+  if (breathGuideText) breathGuideText.textContent = ''
+}
+
+function runBreathPhaseCycle(stepIndex = 0) {
+  if (state !== 'running') return
+
+  const cycle = BREATH_CYCLES[currentBreathId] ?? BREATH_CYCLES.deep
+  const step = cycle[stepIndex % cycle.length]
+  currentPhase = step.phase
+
+  if (breathGuideText) {
+    breathGuideText.textContent = phaseLabel(step.phase)
+  }
+
+  breathPhaseTimeout = window.setTimeout(() => {
+    runBreathPhaseCycle(stepIndex + 1)
+  }, step.duration)
+}
+
+function startBreathPhases() {
+  stopBreathPhases()
+  runBreathPhaseCycle(0)
 }
 
 function restartBreathAnimation() {
@@ -215,6 +282,7 @@ function restartBreathAnimation() {
   void breathPulse.offsetWidth
   breathPulse.classList.add('is-active')
   breathGuide.classList.add('is-active')
+  if (state === 'running') startBreathPhases()
 }
 
 function updateOrbIcon() {
@@ -222,6 +290,13 @@ function updateOrbIcon() {
   const meta = getElementMeta(document.documentElement.dataset.element)
   breathCenterIcon.innerHTML = `<i data-lucide="${meta.icon}" aria-hidden="true"></i>`
   createIcons({ icons: ICONS, attrs: { 'stroke-width': 1.5 }, root: breathCenterIcon })
+}
+
+function updateThemeAria() {
+  if (!themeToggle) return
+  const dark = document.documentElement.classList.contains('dark')
+  themeToggle.setAttribute('aria-pressed', String(dark))
+  themeToggle.setAttribute('aria-label', dark ? t.themeDark : t.themeLight)
 }
 
 function applyLocaleTexts() {
@@ -238,18 +313,19 @@ function applyLocaleTexts() {
   if (twTitle) twTitle.setAttribute('content', t.documentTitle)
   if (twDesc) twDesc.setAttribute('content', t.metaDescription)
 
+  if (skipLink) skipLink.textContent = t.skipToContent
   if (langCode) langCode.textContent = t.langCode
   if (langToggle) langToggle.setAttribute('aria-label', t.langToggle)
-  if (themeToggle) themeToggle.setAttribute('aria-label', t.themeToggle)
+  updateThemeAria()
   if (playBtn) playBtn.setAttribute('aria-label', t.start)
   if (stopBtn) stopBtn.setAttribute('aria-label', t.stop)
   if (stopLabel) stopLabel.textContent = t.stop
-  if (guideInhale) guideInhale.textContent = t.inhale
-  if (guideHold) guideHold.textContent = t.hold
-  if (guideExhale) guideExhale.textContent = t.exhale
   if (authorName) authorName.textContent = t.author
   if (authorSite) authorSite.textContent = t.authorSite
-  if (authorLink) authorLink.href = t.authorHref
+  if (authorLink) {
+    authorLink.href = t.authorHref
+    authorLink.setAttribute('aria-label', `${t.authorSite} (${t.opensNewTab})`)
+  }
   if (guideLink) guideLink.innerHTML = t.readInstructions
 
   ariaNodes.forEach((node) => {
@@ -270,14 +346,27 @@ function applyLocaleTexts() {
   elementButtons.forEach((btn) => {
     btn.setAttribute('aria-label', t.elements[btn.dataset.elementId])
   })
+
+  if (state === 'running' && currentPhase && breathGuideText) {
+    breathGuideText.textContent = phaseLabel(currentPhase)
+  }
 }
 
 function applyLang(next) {
   lang = next === 'en' ? 'en' : 'ru'
   t = LOCALES[lang]
   localStorage.setItem(LANG_KEY, lang)
+  if (state === 'running') stop(false)
   renderView()
   applyLocaleTexts()
+}
+
+function setRadioSelection(buttons, isSelected) {
+  buttons.forEach((btn) => {
+    const selected = isSelected(btn)
+    btn.classList.toggle('is-selected', selected)
+    btn.setAttribute('aria-checked', String(selected))
+  })
 }
 
 function applyElement(id) {
@@ -285,11 +374,7 @@ function applyElement(id) {
   document.documentElement.dataset.element = meta.id
   localStorage.setItem(ELEMENT_KEY, meta.id)
 
-  elementButtons.forEach((btn) => {
-    const selected = btn.dataset.elementId === meta.id
-    btn.classList.toggle('is-selected', selected)
-    btn.setAttribute('aria-pressed', String(selected))
-  })
+  setRadioSelection(elementButtons, (btn) => btn.dataset.elementId === meta.id)
 
   updateOrbIcon()
   updateThemeColorMeta()
@@ -303,11 +388,7 @@ function applyMinutes(value) {
   remaining = durationSec
   localStorage.setItem(MINUTES_KEY, String(minutes))
 
-  minuteButtons.forEach((btn) => {
-    const selected = Number(btn.dataset.minutes) === minutes
-    btn.classList.toggle('is-selected', selected)
-    btn.setAttribute('aria-pressed', String(selected))
-  })
+  setRadioSelection(minuteButtons, (btn) => Number(btn.dataset.minutes) === minutes)
 
   if (timerEl) timerEl.textContent = formatTime(remaining)
 }
@@ -318,11 +399,7 @@ function applyBreath(id) {
   document.documentElement.dataset.breath = currentBreathId
   localStorage.setItem(BREATH_KEY, currentBreathId)
 
-  breathButtons.forEach((btn) => {
-    const selected = btn.dataset.breathId === currentBreathId
-    btn.classList.toggle('is-selected', selected)
-    btn.setAttribute('aria-pressed', String(selected))
-  })
+  setRadioSelection(breathButtons, (btn) => btn.dataset.breathId === currentBreathId)
 
   restartBreathAnimation()
 }
@@ -342,6 +419,7 @@ function applyTheme(theme) {
   document.documentElement.classList.toggle('dark', theme === 'dark')
   localStorage.setItem(THEME_KEY, theme)
   updateThemeColorMeta()
+  updateThemeAria()
 }
 
 function initTheme() {
@@ -383,7 +461,7 @@ function renderSession() {
   breathStage.classList.toggle('flex', running)
   breathPulse.classList.toggle('is-active', running)
   breathGuide.hidden = !running
-  breathGuide.classList.toggle('is-active', running)
+  breathGuide.classList.toggle('is-active', running && !prefersReducedMotion())
   if (guideLink) guideLink.hidden = running
 
   minuteButtons.forEach((btn) => {
@@ -396,9 +474,16 @@ function tick() {
   if (left !== remaining) {
     remaining = left
     timerEl.textContent = formatTime(remaining)
+
+    const currentMinute = Math.ceil(remaining / 60)
+    if (remaining > 0 && currentMinute !== lastAnnouncedMinute && remaining % 60 === 0) {
+      lastAnnouncedMinute = currentMinute
+      announceStatus(formatTime(remaining))
+    }
   }
   if (remaining <= 0) {
-    stop()
+    sessionEndedNaturally = true
+    stop(true)
     return
   }
   rafId = requestAnimationFrame(tick)
@@ -409,21 +494,42 @@ function start() {
   state = 'running'
   remaining = durationSec
   endsAt = Date.now() + durationSec * 1000
+  lastAnnouncedMinute = minutes
+  sessionEndedNaturally = false
   renderSession()
+  startBreathPhases()
+  announceStatus(t.sessionStarted)
   cancelAnimationFrame(rafId)
   rafId = requestAnimationFrame(tick)
+  stopBtn.focus()
 }
 
-function stop() {
+function stop(naturalEnd = false) {
   cancelAnimationFrame(rafId)
   rafId = 0
+  stopBreathPhases()
+  const wasRunning = state === 'running'
   state = 'idle'
   remaining = durationSec
   endsAt = 0
+  lastAnnouncedMinute = -1
   renderSession()
+
+  if (naturalEnd || sessionEndedNaturally) {
+    announceStatus(t.sessionComplete)
+    sessionEndedNaturally = false
+    pendingFocusTarget = 'play'
+    if (playBtn) playBtn.focus()
+    else pendingFocusTarget = 'play'
+  } else if (wasRunning) {
+    pendingFocusTarget = 'play'
+    if (playBtn) playBtn.focus()
+    else pendingFocusTarget = 'play'
+  }
 }
 
 function init() {
+  document.documentElement.lang = lang
   const app = document.querySelector('#app')
   app.innerHTML = renderShell()
   bindChrome()
@@ -439,6 +545,7 @@ function init() {
     route = getRoute()
     renderView()
     applyLocaleTexts()
+    focusMain()
   })
 }
 

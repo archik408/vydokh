@@ -2,6 +2,13 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      ;(function () {
+        var l = localStorage.getItem('vydokh-lang')
+        if (l === 'ru' || l === 'en') document.documentElement.lang = l
+        else if (!navigator.language.toLowerCase().startsWith('ru')) document.documentElement.lang = 'en'
+      })()
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, nadi shodhana</title>
     <meta
@@ -38,7 +45,7 @@
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
-    <meta property="og:image:alt" content="Vydokh — дыхательный шар" />
+    <meta property="og:image:alt" content="Vydokh — иллюстрация осознанного дыхания" />
 
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Vydokh — осознанное дыхание и медитация" />
@@ -47,7 +54,7 @@
       content="Таймер дыхания: диафрагмальное, box 4×4, 4-7-8 и nadi shodhana. Сессии 5–20 минут."
     />
     <meta name="twitter:image" content="/pwa-512x512.png" />
-    <meta name="twitter:image:alt" content="Vydokh — дыхательный шар" />
+    <meta name="twitter:image:alt" content="Vydokh — иллюстрация осознанного дыхания" />
 
     <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)" />
@@ -58,7 +65,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
-    <link rel="mask-icon" href="/favicon.svg" color="#2a9d8f" />
+    <link rel="mask-icon" href="/favicon.svg" color="#4a8fc9" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
