@@ -4,12 +4,18 @@
     <meta charset="UTF-8" />
     <script>
       ;(function () {
-        var l = localStorage.getItem('vydokh-lang')
-        if (l === 'ru' || l === 'en') document.documentElement.lang = l
-        else if (!navigator.language.toLowerCase().startsWith('ru')) document.documentElement.lang = 'en'
+        try {
+          var l = localStorage.getItem('vydokh-lang')
+          if (l === 'ru' || l === 'en') document.documentElement.lang = l
+          else if ((navigator.language || '').toLowerCase().indexOf('ru') !== 0) {
+            document.documentElement.lang = 'en'
+          }
+        } catch (e) {
+          /* private mode / WebView storage blocked */
+        }
       })()
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, nadi shodhana</title>
     <meta
       name="description"
@@ -83,7 +89,7 @@
             "url": "/",
             "applicationCategory": "HealthApplication",
             "operatingSystem": "Any",
-            "browserRequirements": "Requires JavaScript",
+            "browserRequirements": "Requires JavaScript. Supports iOS Safari 14+, Chrome Android 100+, Samsung Internet 15+, and modern WebView.",
             "inLanguage": ["ru", "en"],
             "isAccessibleForFree": true,
             "offers": {

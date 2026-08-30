@@ -3,6 +3,10 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  build: {
+    target: ['es2020', 'chrome87', 'safari14', 'ios14', 'edge88'],
+    cssTarget: 'safari14',
+  },
   plugins: [
     tailwindcss(),
     VitePWA({

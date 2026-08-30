@@ -17,8 +17,11 @@ import {
 import { LOCALES, BREATH_MODE_META, ELEMENT_META, sourceLinks } from './i18n.js'
 import { renderShell, renderHomeView, renderGuideView } from './views.js'
 import { BREATH_CYCLES } from './breathPhases.js'
+import { storageGet, storageSet } from './storage.js'
 
-registerSW({ immediate: true })
+if ('serviceWorker' in navigator) {
+  registerSW({ immediate: true })
+}
 
 const ICONS = { Waves, TreePine, Sun, Wind, Moon, Play, Square, Box, Timer, Circle, ArrowLeft }
 
@@ -32,13 +35,27 @@ const DEFAULT_MINUTES = 5
 const DEFAULT_BREATH = 'deep'
 const MINUTES_OPTIONS = [5, 10, 15, 20]
 
-const prefersReducedMotion = () =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const prefersReducedMotion = () => {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  } catch {
+    return false
+  }
+}
+
+const prefersDarkScheme = () => {
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  } catch {
+    return false
+  }
+}
 
 function detectLang() {
-  const stored = localStorage.getItem(LANG_KEY)
+  const stored = storageGet(LANG_KEY)
   if (stored === 'ru' || stored === 'en') return stored
-  return navigator.language.toLowerCase().startsWith('ru') ? 'ru' : 'en'
+  const navLang = navigator.language || ''
+  return navLang.toLowerCase().startsWith('ru') ? 'ru' : 'en'
 }
 
 let lang = detectLang()
@@ -233,7 +250,12 @@ function navigate(nextRoute) {
 
   const update = () => {
     route = nextRoute
-    history.pushState({ route }, '', path)
+    try {
+      history.pushState({ route }, '', path)
+    } catch {
+      window.location.assign(path)
+      return
+    }
     renderView()
     applyLocaleTexts()
     focusMain()
@@ -355,7 +377,7 @@ function applyLocaleTexts() {
 function applyLang(next) {
   lang = next === 'en' ? 'en' : 'ru'
   t = LOCALES[lang]
-  localStorage.setItem(LANG_KEY, lang)
+  storageSet(LANG_KEY, lang)
   if (state === 'running') stop(false)
   renderView()
   applyLocaleTexts()
@@ -372,7 +394,7 @@ function setRadioSelection(buttons, isSelected) {
 function applyElement(id) {
   const meta = getElementMeta(id)
   document.documentElement.dataset.element = meta.id
-  localStorage.setItem(ELEMENT_KEY, meta.id)
+  storageSet(ELEMENT_KEY, meta.id)
 
   setRadioSelection(elementButtons, (btn) => btn.dataset.elementId === meta.id)
 
@@ -386,7 +408,7 @@ function applyMinutes(value) {
   minutes = next
   durationSec = minutes * 60
   remaining = durationSec
-  localStorage.setItem(MINUTES_KEY, String(minutes))
+  storageSet(MINUTES_KEY, String(minutes))
 
   setRadioSelection(minuteButtons, (btn) => Number(btn.dataset.minutes) === minutes)
 
@@ -397,7 +419,7 @@ function applyBreath(id) {
   const valid = BREATH_MODE_META.some((m) => m.id === id)
   currentBreathId = valid ? id : DEFAULT_BREATH
   document.documentElement.dataset.breath = currentBreathId
-  localStorage.setItem(BREATH_KEY, currentBreathId)
+  storageSet(BREATH_KEY, currentBreathId)
 
   setRadioSelection(breathButtons, (btn) => btn.dataset.breathId === currentBreathId)
 
@@ -417,33 +439,33 @@ function updateThemeColorMeta() {
 
 function applyTheme(theme) {
   document.documentElement.classList.toggle('dark', theme === 'dark')
-  localStorage.setItem(THEME_KEY, theme)
+  storageSet(THEME_KEY, theme)
   updateThemeColorMeta()
   updateThemeAria()
 }
 
 function initTheme() {
-  const stored = localStorage.getItem(THEME_KEY)
+  const stored = storageGet(THEME_KEY)
   if (stored === 'light' || stored === 'dark') {
     applyTheme(stored)
     return
   }
-  applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+  applyTheme(prefersDarkScheme() ? 'dark' : 'light')
 }
 
 function initElement() {
-  const stored = localStorage.getItem(ELEMENT_KEY)
+  const stored = storageGet(ELEMENT_KEY)
   const valid = ELEMENT_META.some((el) => el.id === stored)
   applyElement(valid ? stored : DEFAULT_ELEMENT)
 }
 
 function initMinutes() {
-  const stored = Number(localStorage.getItem(MINUTES_KEY))
+  const stored = Number(storageGet(MINUTES_KEY))
   applyMinutes(MINUTES_OPTIONS.includes(stored) ? stored : DEFAULT_MINUTES)
 }
 
 function initBreath() {
-  const stored = localStorage.getItem(BREATH_KEY)
+  const stored = storageGet(BREATH_KEY)
   const valid = BREATH_MODE_META.some((m) => m.id === stored)
   applyBreath(valid ? stored : DEFAULT_BREATH)
 }
@@ -539,7 +561,11 @@ function init() {
   initBreath()
   renderView()
   applyLocaleTexts()
-  history.replaceState({ route }, '', route === 'guide' ? '/guide' : '/')
+  try {
+    history.replaceState({ route }, '', route === 'guide' ? '/guide' : '/')
+  } catch {
+    /* older WebViews */
+  }
 
   window.addEventListener('popstate', () => {
     route = getRoute()

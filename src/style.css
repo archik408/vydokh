@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./compat.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -12,25 +13,34 @@
 :root {
   --bg: var(--color-lamp);
   --fg: var(--color-ink);
+  --fg-muted: rgba(26, 35, 50, 0.58);
   --fg-muted: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  --surface: rgba(26, 35, 50, 0.06);
   --surface: color-mix(in srgb, var(--color-ink) 6%, transparent);
   --accent: #3d9ecc;
   --accent-hover: #2d87b3;
   --accent-soft: #7ec8e0;
   --accent-fg: #ffffff;
+  --accent-soft-glow: rgba(126, 200, 224, 0.12);
+  --accent-soft-glow: color-mix(in srgb, var(--accent-soft) 12%, transparent);
+  --orb: #56b0d0;
   --orb: color-mix(in srgb, var(--accent) 70%, var(--accent-soft));
+  --orb-glow: rgba(61, 158, 204, 0.28);
   --orb-glow: color-mix(in srgb, var(--accent) 28%, transparent);
   --timer-from: var(--accent);
   --timer-to: var(--accent-soft);
   --breath-duration: 8s;
   --breath-ease: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  --focus-ring: #3d7a96;
   --focus-ring: color-mix(in srgb, var(--accent) 65%, var(--fg));
 }
 
 .dark {
   --bg: var(--color-night);
   --fg: #e8eef4;
+  --fg-muted: rgba(232, 238, 244, 0.62);
   --fg-muted: color-mix(in srgb, #e8eef4 62%, transparent);
+  --surface: rgba(232, 238, 244, 0.08);
   --surface: color-mix(in srgb, #e8eef4 8%, transparent);
 }
 
@@ -51,6 +61,7 @@
 
 /* Water — waves / blue */
 [data-element="water"] {
+  --bg: #f4f8fd;
   --bg: color-mix(in srgb, #3b82f6 7%, var(--color-lamp));
   --accent: #3b82f6;
   --accent-hover: #2563eb;
@@ -58,6 +69,7 @@
 }
 
 .dark[data-element="water"] {
+  --bg: #121d2b;
   --bg: color-mix(in srgb, #60a5fa 12%, var(--color-night));
   --accent: #60a5fa;
   --accent-hover: #93c5fd;
@@ -66,6 +78,7 @@
 
 /* Earth — tree / green */
 [data-element="earth"] {
+  --bg: #f3faf6;
   --bg: color-mix(in srgb, #22a06b 7%, var(--color-lamp));
   --accent: #22a06b;
   --accent-hover: #1a7f54;
@@ -73,6 +86,7 @@
 }
 
 .dark[data-element="earth"] {
+  --bg: #0f1f18;
   --bg: color-mix(in srgb, #34d399 12%, var(--color-night));
   --accent: #34d399;
   --accent-hover: #6ee7b7;
@@ -81,6 +95,7 @@
 
 /* Sun — lamp yellow */
 [data-element="sun"] {
+  --bg: #faf6ed;
   --bg: color-mix(in srgb, #e3a008 8%, var(--color-lamp));
   --accent: #e3a008;
   --accent-hover: #c48906;
@@ -89,6 +104,7 @@
 }
 
 .dark[data-element="sun"] {
+  --bg: #1f1a0c;
   --bg: color-mix(in srgb, #fbbf24 12%, var(--color-night));
   --accent: #fbbf24;
   --accent-hover: #fcd34d;
@@ -98,6 +114,7 @@
 
 /* Air — mint cyan */
 [data-element="air"] {
+  --bg: #f2faf8;
   --bg: color-mix(in srgb, #2bb8a6 7%, var(--color-lamp));
   --accent: #2bb8a6;
   --accent-hover: #219e8e;
@@ -106,6 +123,7 @@
 }
 
 .dark[data-element="air"] {
+  --bg: #0f1e1c;
   --bg: color-mix(in srgb, #5eead4 12%, var(--color-night));
   --accent: #5eead4;
   --accent-hover: #99f6e4;
@@ -141,8 +159,10 @@ html.dark {
   z-index: 100;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  background: var(--fg);
-  color: var(--bg);
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 55%, transparent);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--fg) 12%, transparent);
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
@@ -159,6 +179,11 @@ html.dark {
   outline-offset: 2px;
 }
 
+#main-content:focus,
+#main-content:focus-visible {
+  outline: none;
+}
+
 .rail-btn:focus-visible,
 .play-btn:focus-visible,
 .guide-link:focus-visible,
@@ -171,13 +196,16 @@ html.dark {
 
 body {
   margin: 0;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
   font-family: var(--font-sans);
+  background: var(--bg);
   background:
     radial-gradient(ellipse 80% 60% at 50% 0%, var(--orb-glow), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 50% 100%, color-mix(in srgb, var(--accent-soft) 12%, transparent), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, var(--accent-soft-glow), transparent 50%),
     var(--bg);
   color: var(--fg);
   transition:
@@ -187,6 +215,8 @@ body {
 }
 
 #app {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   min-height: 100dvh;
   min-height: 100svh;
   overflow-x: hidden;
@@ -195,6 +225,8 @@ body {
 .app-shell {
   position: relative;
   display: flex;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   min-height: 100dvh;
   min-height: 100svh;
   flex-direction: column;
@@ -633,6 +665,8 @@ body {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition:
     color 200ms ease,
     background-color 200ms ease,
@@ -666,6 +700,8 @@ body {
 
 .play-btn {
   color: var(--accent-fg);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .rail-btn:hover:not(:disabled) {

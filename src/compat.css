@@ -1,0 +1,118 @@
+/* Fallbacks for browsers without color-mix (iOS < 16.2, older Android WebView) */
+@supports not (color: color-mix(in srgb, white, black)) {
+  :root {
+    --fg-muted: rgba(26, 35, 50, 0.58);
+    --surface: rgba(26, 35, 50, 0.06);
+    --orb: #56b0d0;
+    --orb-glow: rgba(61, 158, 204, 0.28);
+    --focus-ring: #3d7a96;
+    --accent-soft-glow: rgba(126, 200, 224, 0.12);
+    --link-underline: rgba(61, 158, 204, 0.35);
+    --rail-divider: rgba(26, 35, 50, 0.26);
+    --selected-border: rgba(61, 158, 204, 0.55);
+    --text-soft: rgba(26, 35, 50, 0.78);
+    --orb-highlight: #a8dce8;
+    --orb-edge: rgba(86, 176, 208, 0.6);
+    --shadow-soft: rgba(0, 0, 0, 0.25);
+  }
+
+  .dark {
+    --fg-muted: rgba(232, 238, 244, 0.62);
+    --surface: rgba(232, 238, 244, 0.08);
+    --text-soft: rgba(232, 238, 244, 0.78);
+    --rail-divider: rgba(232, 238, 244, 0.28);
+  }
+
+  [data-element="water"] {
+    --bg: #f4f8fd;
+    --orb: #6ba8f7;
+    --orb-glow: rgba(59, 130, 246, 0.28);
+    --accent-soft-glow: rgba(125, 211, 252, 0.12);
+  }
+
+  .dark[data-element="water"] {
+    --bg: #121d2b;
+    --orb: #7ab8fc;
+    --orb-glow: rgba(96, 165, 250, 0.28);
+    --accent-soft-glow: rgba(56, 189, 248, 0.12);
+  }
+
+  [data-element="earth"] {
+    --bg: #f3faf6;
+    --orb: #3cb87d;
+    --orb-glow: rgba(34, 160, 107, 0.28);
+    --accent-soft-glow: rgba(134, 239, 172, 0.12);
+  }
+
+  .dark[data-element="earth"] {
+    --bg: #0f1f18;
+    --orb: #5ee7b0;
+    --orb-glow: rgba(52, 211, 153, 0.28);
+    --accent-soft-glow: rgba(74, 222, 128, 0.12);
+  }
+
+  [data-element="sun"] {
+    --bg: #faf6ed;
+    --orb: #e8b84a;
+    --orb-glow: rgba(227, 160, 8, 0.28);
+    --accent-soft-glow: rgba(252, 211, 77, 0.12);
+  }
+
+  .dark[data-element="sun"] {
+    --bg: #1f1a0c;
+    --orb: #fccf5a;
+    --orb-glow: rgba(251, 191, 36, 0.28);
+    --accent-soft-glow: rgba(245, 158, 11, 0.12);
+  }
+
+  [data-element="air"] {
+    --bg: #f2faf8;
+    --orb: #45c4b4;
+    --orb-glow: rgba(43, 184, 166, 0.28);
+    --accent-soft-glow: rgba(153, 246, 228, 0.12);
+  }
+
+  .dark[data-element="air"] {
+    --bg: #0f1e1c;
+    --orb: #7aede0;
+    --orb-glow: rgba(94, 234, 212, 0.28);
+    --accent-soft-glow: rgba(45, 212, 191, 0.12);
+  }
+
+  .guide-text,
+  .guide-dl dt {
+    color: var(--text-soft);
+  }
+
+  .guide-link-word,
+  .guide-source,
+  .site-footer a {
+    border-bottom-color: var(--link-underline);
+  }
+
+  .rail-divider {
+    background: var(--rail-divider);
+  }
+
+  .rail-btn.is-selected {
+    border-color: var(--selected-border);
+  }
+
+  .breath-orb {
+    background: radial-gradient(
+      circle at 40% 35%,
+      var(--orb-highlight),
+      var(--orb) 45%,
+      var(--orb-edge)
+    );
+  }
+
+  .breath-center-icon {
+    filter: drop-shadow(0 1px 8px var(--shadow-soft));
+  }
+
+  .skip-link {
+    border-color: var(--rail-divider);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  }
+}
