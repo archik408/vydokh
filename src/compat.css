@@ -14,6 +14,10 @@
     --orb-highlight: #a8dce8;
     --orb-edge: rgba(86, 176, 208, 0.6);
     --shadow-soft: rgba(0, 0, 0, 0.25);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(61, 158, 204, 0.34);
+    --scrollbar-thumb-hover: rgba(61, 158, 204, 0.52);
+    --scrollbar-thumb-active: rgba(45, 135, 179, 0.68);
   }
 
   .dark {
