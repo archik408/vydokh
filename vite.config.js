@@ -7,11 +7,20 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg', 'pwa-192x192.png', 'pwa-512x512.png', 'pwa-maskable-512x512.png'],
+      includeAssets: [
+        'favicon.svg',
+        'icons.svg',
+        'robots.txt',
+        'llms.txt',
+        'pwa-192x192.png',
+        'pwa-512x512.png',
+        'pwa-maskable-512x512.png',
+      ],
       manifest: {
         name: 'Vydokh',
         short_name: 'Vydokh',
-        description: 'Mindful breathing and meditation',
+        description:
+          'Mindful breathing timer: diaphragmatic breathing, box 4×4, 4-7-8, and alternate nostril breathing.',
         theme_color: '#faf8f5',
         background_color: '#faf8f5',
         display: 'standalone',

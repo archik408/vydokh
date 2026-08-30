@@ -2,25 +2,132 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Vydokh — mindful breathing and meditation" />
+    <title>Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, nadi shodhana</title>
+    <meta
+      name="description"
+      content="Бесплатный таймер осознанного дыхания: диафрагмальное дыхание, квадрат 4×4, метод 4-7-8 и попеременное дыхание ноздрями. Сессии 5–20 минут, офлайн PWA, светлая и тёмная тема."
+    />
+    <meta
+      name="keywords"
+      content="дыхание, медитация, осознанное дыхание, диафрагмальное дыхание, квадратное дыхание, box breathing, 4-7-8, nadi shodhana, pranayama, relaxation, breathing timer, Vydokh, выдох, breathing app, meditation app"
+    />
+    <meta name="author" content="Artur Basak" />
+    <meta name="creator" content="Artur Basak" />
+    <meta name="publisher" content="Artur Basak" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="application-name" content="Vydokh" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="canonical" href="/" />
+    <link rel="alternate" hreflang="ru" href="/" />
+    <link rel="alternate" hreflang="en" href="/" />
+    <link rel="alternate" hreflang="x-default" href="/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Vydokh" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:title" content="Vydokh — осознанное дыхание и медитация" />
+    <meta
+      property="og:description"
+      content="Таймер дыхания: диафрагмальное, box 4×4, 4-7-8 и nadi shodhana. Сессии 5–20 минут, офлайн, без регистрации."
+    />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/pwa-512x512.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Vydokh — дыхательный шар" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Vydokh — осознанное дыхание и медитация" />
+    <meta
+      name="twitter:description"
+      content="Таймер дыхания: диафрагмальное, box 4×4, 4-7-8 и nadi shodhana. Сессии 5–20 минут."
+    />
+    <meta name="twitter:image" content="/pwa-512x512.png" />
+    <meta name="twitter:image:alt" content="Vydokh — дыхательный шар" />
+
     <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1419" media="(prefers-color-scheme: dark)" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Vydokh" />
-    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <link rel="mask-icon" href="/favicon.svg" color="#2a9d8f" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;600&display=swap" rel="stylesheet" />
-    <title>Vydokh</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "/#app",
+            "name": "Vydokh",
+            "alternateName": "Выдох",
+            "url": "/",
+            "applicationCategory": "HealthApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires JavaScript",
+            "inLanguage": ["ru", "en"],
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "description": "Mindful breathing timer for diaphragmatic breathing, box breathing (4×4), 4-7-8, and alternate nostril breathing (nadi shodhana).",
+            "author": {
+              "@type": "Person",
+              "name": "Artur Basak",
+              "url": "https://arturbasak.dev"
+            },
+            "image": "/pwa-512x512.png"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "/#website",
+            "name": "Vydokh",
+            "url": "/",
+            "inLanguage": ["ru", "en"],
+            "publisher": {
+              "@type": "Person",
+              "name": "Artur Basak",
+              "url": "https://arturbasak.dev"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <main>
+        <h1>Vydokh — осознанное дыхание и медитация</h1>
+        <p>
+          Бесплатное веб-приложение для практики дыхания: диафрагмальное дыхание, квадрат 4×4, метод 4-7-8 и
+          попеременное дыхание ноздрями (nadi shodhana). Сессии 5, 10, 15 или 20 минут. Работает офлайн как PWA.
+        </p>
+        <p>
+          Vydokh is a free mindful breathing timer: diaphragmatic breathing, box 4×4, 4-7-8, and alternate nostril
+          breathing. Sessions of 5–20 minutes. Offline PWA.
+        </p>
+        <p>Автор: <a href="https://arturbasak.dev">Artur Basak</a></p>
+        <nav>
+          <a href="/">Практика</a>
+          <a href="/guide">Инструкция</a>
+        </nav>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

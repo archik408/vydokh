@@ -228,6 +228,15 @@ function applyLocaleTexts() {
   t = LOCALES[lang]
   document.documentElement.lang = lang
   if (metaDescription) metaDescription.content = t.metaDescription
+  document.title = t.documentTitle
+  const ogTitle = document.querySelector('meta[property="og:title"]')
+  const ogDesc = document.querySelector('meta[property="og:description"]')
+  const twTitle = document.querySelector('meta[name="twitter:title"]')
+  const twDesc = document.querySelector('meta[name="twitter:description"]')
+  if (ogTitle) ogTitle.setAttribute('content', t.documentTitle)
+  if (ogDesc) ogDesc.setAttribute('content', t.metaDescription)
+  if (twTitle) twTitle.setAttribute('content', t.documentTitle)
+  if (twDesc) twDesc.setAttribute('content', t.metaDescription)
 
   if (langCode) langCode.textContent = t.langCode
   if (langToggle) langToggle.setAttribute('aria-label', t.langToggle)

@@ -44,6 +44,7 @@ const SOURCES = {
 export const LOCALES = {
   ru: {
     metaDescription: 'Vydokh — осознанное дыхание и медитация',
+    documentTitle: 'Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, nadi shodhana',
     themeToggle: 'Сменить тему',
     langToggle: 'Switch to English',
     langCode: 'EN',
@@ -131,13 +132,13 @@ export const LOCALES = {
       },
       anb: {
         label: 'Попеременное дыхание ноздрями',
-        title: 'Попеременное дыхание ноздрями (nadi shodhana)',
+        title: 'Попеременное дыхание ноздрями',
         what:
           'Вдох через одну ноздрю, выдох через другую, затем наоборот. Свободную ноздрю мягко закрывают пальцем. Ритм в приложении тот же, что у глубокого дыхания: плавный вдох и такой же спокойный выдох.',
         why:
           'Техника удерживает внимание на дыхании и по очереди задействует обе стороны носового потока. В традиции йоги её связывают с «очищением каналов» (nadi shodhana / nadi shuddhi).',
         helps:
-          'Cleveland Clinic отмечает, что практика может помочь успокоиться, поддержать сердечно-дыхательное самочувствие и вернуть ощущение баланса. В исследовании International Journal of Yoga (PMC4097918) после nadi shuddhi у тренированных участников снижались показатели пульса и давления по сравнению с обычным дыханием.',
+          'Cleveland Clinic отмечает, что практика может помочь успокоиться, поддержать сердечно-дыхательное самочувствие и вернуть ощущение баланса. В исследовании International Journal of Yoga после nadi shuddhi у тренированных участников снижались показатели пульса и давления по сравнению с обычным дыханием.',
         howToUse:
           'Слева выберите ту же круглую кнопку, что и для глубокого дыхания. Следуйте шару: на росте — вдох через левую ноздрю, на сжатии — выдох через правую; затем вдох справа и выдох слева. Если заложен нос или есть заболевания лёгких или сердца, сначала посоветуйтесь с врачом.',
         sources: [SOURCES.clevelandAnb, SOURCES.pmcAnb],
@@ -146,6 +147,7 @@ export const LOCALES = {
   },
   en: {
     metaDescription: 'Vydokh — mindful breathing and meditation',
+    documentTitle: 'Vydokh — mindful breathing & meditation | Box 4×4, 4-7-8, nadi shodhana',
     themeToggle: 'Toggle theme',
     langToggle: 'Переключить на русский',
     langCode: 'RU',
@@ -233,13 +235,13 @@ export const LOCALES = {
       },
       anb: {
         label: 'Alternate nostril breathing',
-        title: 'Alternate nostril breathing (nadi shodhana)',
+        title: 'Alternate nostril breathing',
         what:
           'Inhale through one nostril, exhale through the other, then reverse. Gently close the unused nostril with a finger. The app rhythm is the same as deep breathing: a smooth inhale and an equally calm exhale.',
         why:
           'The practice keeps attention on the breath and alternates airflow through each nostril. In yoga it is often called nadi shodhana or nadi shuddhi — “channel-cleansing” breath.',
         helps:
-          'Cleveland Clinic notes that it may help you feel calmer, support cardiorespiratory wellbeing, and restore a sense of balance. In an International Journal of Yoga study (PMC4097918), nadi shuddhi was followed by lower heart-rate and blood-pressure measures versus normal breathing in yoga-trained participants.',
+          'Cleveland Clinic notes that it may help you feel calmer, support cardiorespiratory wellbeing, and restore a sense of balance. In an International Journal of Yoga study, nadi shuddhi was followed by lower heart-rate and blood-pressure measures versus normal breathing in yoga-trained participants.',
         howToUse:
           'On the left rail, tap the same plain circle used for deep breathing. Follow the orb: as it grows, inhale through the left nostril; as it shrinks, exhale through the right; then inhale right and exhale left. If you have a blocked nose or a lung or heart condition, check with a clinician first.',
         sources: [SOURCES.clevelandAnb, SOURCES.pmcAnb],

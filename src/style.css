@@ -334,11 +334,12 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 0.15rem 0.2rem;
-  font-size: 0.7rem;
-  line-height: 1.35;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .guide-source {
+  font-size: inherit;
   color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);

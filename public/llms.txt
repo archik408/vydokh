@@ -1,0 +1,18 @@
+# Vydokh
+
+> Mindful breathing and meditation web app. Free, installable PWA. No account required.
+
+Vydokh (выдох) is a calm breathing timer for diaphragmatic breathing, box breathing (4×4), the 4-7-8 method, and alternate nostril breathing (nadi shodhana). Sessions last 5, 10, 15, or 20 minutes. Light/dark themes and color palettes inspired by water, earth, sun, and air.
+
+## Pages
+
+- `/` — breathing session: timer, play/stop, modes, duration, themes
+- `/guide` — instructions: how to sit, diaphragmatic breathing, box 4×4, 4-7-8, nadi shodhana, with citations (Cleveland Clinic, Harvard Health, NCCIH, NHS, PMC)
+
+## Author
+
+Artur Basak — https://arturbasak.dev
+
+## Languages
+
+Russian and English (in-app toggle).
