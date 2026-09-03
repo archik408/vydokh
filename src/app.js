@@ -27,7 +27,7 @@ import {
   dismissInstallHint,
 } from './install.js'
 import { enableWakeLock, disableWakeLock } from './wakeLock.js'
-import { playPhaseCues, stopBreathCues, unlockBreathAudio } from './breathCues.js'
+import { playPhaseCues, stopBreathCues, unlockBreathAudio, releaseBreathAudio } from './breathCues.js'
 
 if ('serviceWorker' in navigator) {
   registerSW({ immediate: true })
@@ -559,7 +559,8 @@ function start() {
   endsAt = Date.now() + durationSec * 1000
   lastAnnouncedMinute = minutes
   sessionEndedNaturally = false
-  unlockBreathAudio()
+  // Fire unlock without awaiting — Safari can hang on AudioContext.resume().
+  void unlockBreathAudio()
   renderSession()
   startBreathPhases()
   announceStatus(t.sessionStarted)
@@ -573,6 +574,7 @@ function stop(naturalEnd = false) {
   cancelAnimationFrame(rafId)
   rafId = 0
   stopBreathPhases()
+  releaseBreathAudio()
   void disableWakeLock()
   const wasRunning = state === 'running'
   state = 'idle'

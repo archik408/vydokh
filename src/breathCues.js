@@ -1,25 +1,32 @@
 /**
  * Unified breath cues: soft Web Audio tones + Vibration API, same rhythm.
  * Inhale: eased pulses (dense → sparse) · Hold: silence · Exhale: soft sustained tone
+ *
+ * iOS: playback audio session + short unlock; never block session start on audio.
  */
 
 const DOT_MS = 48
 const EXHALE_CHUNK_MS = 4000
-/** Start-to-start gap at the beginning of inhale (dense) */
 const INHALE_GAP_MIN_MS = 72
-/** Start-to-start gap near the end of inhale (sparse) */
 const INHALE_GAP_MAX_MS = 300
 const INHALE_PULSE_MIN = 8
 const INHALE_PULSE_MAX = 22
 
-/** Low, dull pulse — inhale dots */
+/** Soft low tones (original character) */
 const INHALE_FREQ = 118
-/** Slightly lower, warmer sustain — exhale */
 const EXHALE_FREQ = 92
 const MASTER_GAIN = 0.28
 
+const SILENT_WAV =
+  'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA'
+
+const UNLOCK_TIMEOUT_MS = 280
+
 let audioCtx = null
 let masterGain = null
+let unlockEl = null
+let sessionAudioActive = false
+let visibilityBound = false
 /** @type {Array<{ stop: (when?: number) => void, gain?: GainNode }>} */
 let activeSources = []
 
@@ -27,22 +34,28 @@ function canVibrate() {
   return typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function'
 }
 
-/** Ease-in cubic — gaps grow slowly at first, then stretch toward the end */
 function easeInCubic(t) {
   return t ** 3
 }
 
-/**
- * Absolute start times (ms) of inhale pulses within the phase.
- * Dense at the start, slowing with larger pauses toward the end.
- * @param {number} durationMs
- * @returns {number[]}
- */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function setPlaybackSession() {
+  try {
+    if (navigator.audioSession) {
+      navigator.audioSession.type = 'playback'
+    }
+  } catch {
+    /* AudioSession not available */
+  }
+}
+
 function buildInhalePulseTimes(durationMs) {
   const lastStart = Math.max(0, durationMs - DOT_MS)
   if (lastStart <= 0) return [0]
 
-  // Fit as many pulses as the phase allows with growing gaps
   let count = INHALE_PULSE_MIN
   for (let n = INHALE_PULSE_MAX; n >= INHALE_PULSE_MIN; n--) {
     const span = estimateInhaleSpan(n)
@@ -61,12 +74,10 @@ function buildInhalePulseTimes(durationMs) {
     raw.push(raw[raw.length - 1] + gap)
   }
 
-  // Fit the full inhale; more pulses keep end gaps from stretching too far
   const scale = lastStart / raw[raw.length - 1]
   return raw.map((t) => t * scale)
 }
 
-/** Unscaled span of growing gaps for `count` pulses */
 function estimateInhaleSpan(count) {
   if (count <= 1) return 0
   let span = 0
@@ -77,7 +88,6 @@ function estimateInhaleSpan(count) {
   return span
 }
 
-/** Vibration pattern [vibrate, pause, vibrate, …] from shared pulse times */
 function buildInhalePattern(times) {
   const pattern = []
   for (let i = 0; i < times.length; i++) {
@@ -114,11 +124,48 @@ function ensureAudio() {
     masterGain = audioCtx.createGain()
     masterGain.gain.value = MASTER_GAIN
     masterGain.connect(audioCtx.destination)
-  }
-  if (audioCtx.state === 'suspended') {
-    void audioCtx.resume()
+
+    audioCtx.addEventListener('statechange', () => {
+      if (!sessionAudioActive || !audioCtx) return
+      if (audioCtx.state !== 'running' && audioCtx.state !== 'closed') {
+        void Promise.race([audioCtx.resume(), sleep(UNLOCK_TIMEOUT_MS)]).catch(() => {})
+      }
+    })
   }
   return audioCtx
+}
+
+function ensureUnlockElement() {
+  if (unlockEl) return unlockEl
+  unlockEl = new Audio(SILENT_WAV)
+  unlockEl.loop = true
+  unlockEl.preload = 'auto'
+  unlockEl.volume = 0.01
+  unlockEl.setAttribute('playsinline', '')
+  unlockEl.setAttribute('webkit-playsinline', '')
+  return unlockEl
+}
+
+async function resumeContext(ctx) {
+  if (!ctx || ctx.state === 'closed' || ctx.state === 'running') return ctx?.state === 'running'
+  try {
+    await Promise.race([ctx.resume(), sleep(UNLOCK_TIMEOUT_MS)])
+  } catch {
+    return false
+  }
+  return ctx.state === 'running'
+}
+
+function playSilentBuffer(ctx) {
+  try {
+    const buffer = ctx.createBuffer(1, 1, ctx.sampleRate)
+    const source = ctx.createBufferSource()
+    source.buffer = buffer
+    source.connect(ctx.destination)
+    source.start(0)
+  } catch {
+    /* ignore */
+  }
 }
 
 function track(source) {
@@ -130,22 +177,19 @@ function track(source) {
   return source
 }
 
-function stopAudio(immediate = false) {
+function stopAudio() {
   const ctx = audioCtx
   const now = ctx?.currentTime ?? 0
 
   for (const source of activeSources) {
     try {
-      if (!immediate && source.gain?.gain && ctx) {
-        source.gain.gain.cancelScheduledValues(now)
-        source.gain.gain.setValueAtTime(Math.max(source.gain.gain.value, 0.0001), now)
-        source.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04)
-        source.stop?.(now + 0.05)
-      } else {
-        source.stop?.(0)
-      }
+      source.stop?.(now)
     } catch {
-      /* already stopped */
+      try {
+        source.stop?.(0)
+      } catch {
+        /* already stopped */
+      }
     }
   }
   activeSources = []
@@ -164,13 +208,6 @@ function stopVibrate() {
   vibrate(0)
 }
 
-/**
- * Soft muffled sine pulse (inhale “dot”).
- * @param {AudioContext} ctx
- * @param {number} when
- * @param {number} durationSec
- * @param {number} freq
- */
 function schedulePulse(ctx, when, durationSec, freq) {
   const osc = ctx.createOscillator()
   const filter = ctx.createBiquadFilter()
@@ -199,17 +236,9 @@ function schedulePulse(ctx, when, durationSec, freq) {
   osc.stop(when + release + 0.03)
 
   track(osc)
-  // Keep gain node reachable for soft stop of in-flight pulses
   osc.gain = gain
 }
 
-/**
- * Soft continuous tone for the full exhale.
- * @param {AudioContext} ctx
- * @param {number} when
- * @param {number} durationSec
- * @param {number} freq
- */
 function scheduleSustain(ctx, when, durationSec, freq) {
   const osc = ctx.createOscillator()
   const filter = ctx.createBiquadFilter()
@@ -218,7 +247,6 @@ function scheduleSustain(ctx, when, durationSec, freq) {
   osc.type = 'sine'
   osc.frequency.setValueAtTime(freq, when)
 
-  // Subtle 2nd partial for a warmer “push”, still muted
   const osc2 = ctx.createOscillator()
   const gain2 = ctx.createGain()
   osc2.type = 'triangle'
@@ -256,30 +284,44 @@ function scheduleSustain(ctx, when, durationSec, freq) {
   osc2.gain = gain
 }
 
-function scheduleInhaleAudio(times) {
+async function prepareAudioGraph() {
+  setPlaybackSession()
   const ctx = ensureAudio()
-  if (!ctx || !masterGain) return
+  if (!ctx || !masterGain) return null
+  await resumeContext(ctx)
+  return ctx.state === 'running' ? ctx : null
+}
 
-  // Align first pulse with vibrate() which starts immediately
+function scheduleInhaleAudio(ctx, times) {
   const startAt = ctx.currentTime
   for (const t of times) {
     schedulePulse(ctx, startAt + t / 1000, DOT_MS / 1000, INHALE_FREQ)
   }
 }
 
-function scheduleExhaleAudio(durationMs) {
-  const ctx = ensureAudio()
-  if (!ctx || !masterGain) return
+function scheduleExhaleAudio(ctx, durationMs) {
   scheduleSustain(ctx, ctx.currentTime, durationMs / 1000, EXHALE_FREQ)
 }
 
 export function stopBreathCues() {
   stopVibrate()
-  stopAudio(true)
+  stopAudio()
+}
+
+export function releaseBreathAudio() {
+  sessionAudioActive = false
+  stopBreathCues()
+  if (unlockEl) {
+    try {
+      unlockEl.pause()
+      unlockEl.currentTime = 0
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 /**
- * Play phase cues as one organism: audio + haptic share the same timeline.
  * @param {'inhale' | 'hold' | 'exhale'} phase
  * @param {number} durationMs
  */
@@ -290,20 +332,59 @@ export function playPhaseCues(phase, durationMs) {
 
   if (phase === 'inhale') {
     const times = buildInhalePulseTimes(durationMs)
-    scheduleInhaleAudio(times)
     vibrate(buildInhalePattern(times))
+    void prepareAudioGraph().then((ctx) => {
+      if (!ctx || !sessionAudioActive) return
+      scheduleInhaleAudio(ctx, times)
+    })
     return
   }
 
   if (phase === 'exhale') {
-    scheduleExhaleAudio(durationMs)
     vibrate(buildExhalePattern(durationMs))
+    void prepareAudioGraph().then((ctx) => {
+      if (!ctx || !sessionAudioActive) return
+      scheduleExhaleAudio(ctx, durationMs)
+    })
   }
 }
 
-/** Warm up AudioContext from a user gesture (call on session start). */
-export function unlockBreathAudio() {
+/**
+ * Kick off iOS/WebAudio unlock from the Play gesture.
+ * Synchronous work runs immediately; awaits are capped so Safari cannot hang.
+ */
+export async function unlockBreathAudio() {
+  setPlaybackSession()
+  sessionAudioActive = true
+
   const ctx = ensureAudio()
-  if (!ctx) return
-  void ctx.resume()
+  if (!ctx) return false
+
+  // Still inside the user-gesture call stack if start() does not await us.
+  playSilentBuffer(ctx)
+  if (ctx.state !== 'running' && ctx.state !== 'closed') {
+    void ctx.resume()
+  }
+
+  try {
+    const el = ensureUnlockElement()
+    el.currentTime = 0
+    void el.play().catch(() => {})
+  } catch {
+    /* ignore */
+  }
+
+  await Promise.race([resumeContext(ctx), sleep(UNLOCK_TIMEOUT_MS)])
+
+  if (!visibilityBound) {
+    visibilityBound = true
+    document.addEventListener('visibilitychange', () => {
+      if (!sessionAudioActive || document.visibilityState !== 'visible') return
+      setPlaybackSession()
+      void resumeContext(audioCtx)
+      if (unlockEl?.paused) void unlockEl.play().catch(() => {})
+    })
+  }
+
+  return audioCtx?.state === 'running'
 }
