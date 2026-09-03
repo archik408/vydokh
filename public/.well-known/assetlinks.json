@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.arturbasak.vydokh",
+        "sha256_cert_fingerprints": ["51:F5:A9:B2:A8:B4:5E:19:00:BB:5D:5A:5F:6B:77:CC:3F:AD:92:06:A3:DE:D3:B4:B1:BA:6B:D5:1D:F6:9E:4A"]
+      }
+    }]
