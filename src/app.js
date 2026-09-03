@@ -26,6 +26,8 @@ import {
   promptInstall,
   dismissInstallHint,
 } from './install.js'
+import { enableWakeLock, disableWakeLock } from './wakeLock.js'
+import { playPhaseCues, stopBreathCues, unlockBreathAudio } from './breathCues.js'
 
 if ('serviceWorker' in navigator) {
   registerSW({ immediate: true })
@@ -303,6 +305,7 @@ function stopBreathPhases() {
   clearTimeout(breathPhaseTimeout)
   breathPhaseTimeout = 0
   currentPhase = null
+  stopBreathCues()
   if (breathGuideText) breathGuideText.textContent = ''
 }
 
@@ -316,6 +319,8 @@ function runBreathPhaseCycle(stepIndex = 0) {
   if (breathGuideText) {
     breathGuideText.textContent = phaseLabel(step.phase)
   }
+
+  playPhaseCues(step.phase, step.duration)
 
   breathPhaseTimeout = window.setTimeout(() => {
     runBreathPhaseCycle(stepIndex + 1)
@@ -554,11 +559,13 @@ function start() {
   endsAt = Date.now() + durationSec * 1000
   lastAnnouncedMinute = minutes
   sessionEndedNaturally = false
+  unlockBreathAudio()
   renderSession()
   startBreathPhases()
   announceStatus(t.sessionStarted)
   cancelAnimationFrame(rafId)
   rafId = requestAnimationFrame(tick)
+  void enableWakeLock()
   stopBtn.focus()
 }
 
@@ -566,6 +573,7 @@ function stop(naturalEnd = false) {
   cancelAnimationFrame(rafId)
   rafId = 0
   stopBreathPhases()
+  void disableWakeLock()
   const wasRunning = state === 'running'
   state = 'idle'
   remaining = durationSec

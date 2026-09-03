@@ -20,6 +20,8 @@ export default defineConfig({
         'pwa-192x192.png',
         'pwa-512x512.png',
         'pwa-maskable-512x512.png',
+        'wake-silent.mp4',
+        'wake-silent.webm',
       ],
       manifest: {
         id: '/',
@@ -131,7 +133,7 @@ export default defineConfig({
       },
       workbox: {
         // Offline-first app shell: precache build assets
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2,webmanifest,mp4,webm}'],
         // Install-prompt screenshots are not needed offline
         globIgnores: ['**/screenshots/**'],
         navigateFallback: '/index.html',
