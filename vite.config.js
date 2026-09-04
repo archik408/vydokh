@@ -137,14 +137,16 @@ export default defineConfig({
         // Install-prompt screenshots are not needed offline
         globIgnores: ['**/screenshots/**'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api/],
+        // Keep Digital Asset Links (and similar) out of the SPA shell
+        navigateFallbackDenylist: [/^\/api/, /^\/\.well-known\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
         // CacheFirst for everything fetched at runtime (fonts, images, static)
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.mode === 'navigate',
+            urlPattern: ({ request, url }) =>
+              request.mode === 'navigate' && !url.pathname.startsWith('/.well-known/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'vydokh-pages',
