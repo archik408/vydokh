@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.arturbasak.vydokh",
-        "sha256_cert_fingerprints": ["C8:5F:53:6F:C9:0F:54:BC:05:16:DA:2C:B6:69:A3:2F:0B:89:8E:CD:49:20:2E:9B:7E:1B:F4:34:22:77:84:7E"]
+        "sha256_cert_fingerprints": ["72:8F:8A:75:58:DF:D3:4E:89:65:64:87:58:55:4F:DF:2C:61:E9:FE:9D:3F:92:50:F1:E3:64:F0:24:09:E4:9B"]
       }
     }]
