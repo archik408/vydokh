@@ -4,6 +4,10 @@ export const BREATH_CYCLES = {
     { phase: 'inhale', duration: 4000 },
     { phase: 'exhale', duration: 4000 },
   ],
+  coherent: [
+    { phase: 'inhale', duration: 5500 },
+    { phase: 'exhale', duration: 5500 },
+  ],
   box: [
     { phase: 'inhale', duration: 4000 },
     { phase: 'hold', duration: 4000 },

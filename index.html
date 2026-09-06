@@ -1,29 +1,36 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" class="dark" data-element="water">
   <head>
     <meta charset="UTF-8" />
     <script>
       ;(function () {
         try {
           var l = localStorage.getItem('vydokh-lang')
-          if (l === 'ru' || l === 'en') document.documentElement.lang = l
-          else if ((navigator.language || '').toLowerCase().indexOf('ru') !== 0) {
-            document.documentElement.lang = 'en'
-          }
+          if (l === 'en') document.documentElement.lang = 'en'
+          else document.documentElement.lang = 'ru'
+
+          var theme = localStorage.getItem('vydokh-theme')
+          if (theme === 'light') document.documentElement.classList.remove('dark')
+          else document.documentElement.classList.add('dark')
+
+          var el = localStorage.getItem('vydokh-element')
+          var valid = el === 'water' || el === 'earth' || el === 'sun' || el === 'air'
+          document.documentElement.dataset.element = valid ? el : 'water'
         } catch (e) {
-          /* private mode / WebView storage blocked */
+          document.documentElement.classList.add('dark')
+          document.documentElement.dataset.element = 'water'
         }
       })()
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, nadi shodhana</title>
+    <title>Vydokh — осознанное дыхание и медитация | Box 4×4, 4-7-8, sama vritti, nadi shodhana</title>
     <meta
       name="description"
-      content="Бесплатный таймер осознанного дыхания: диафрагмальное дыхание, квадрат 4×4, метод 4-7-8 и попеременное дыхание ноздрями. Сессии 5–20 минут, офлайн PWA, светлая и тёмная тема."
+      content="Бесплатный таймер осознанного дыхания: диафрагмальное дыхание, когерентное, квадрат 4×4, метод 4-7-8 и попеременное дыхание ноздрями. Сессии 5–20 минут, офлайн, светлая и тёмная тема."
     />
     <meta
       name="keywords"
-      content="дыхание, медитация, осознанное дыхание, диафрагмальное дыхание, квадратное дыхание, box breathing, 4-7-8, nadi shodhana, pranayama, relaxation, breathing timer, Vydokh, выдох, breathing app, meditation app"
+      content="дыхание, медитация, осознанное дыхание, диафрагмальное дыхание, когерентное дыхание, резонансное дыхание, квадратное дыхание, box breathing, coherent breathing, resonance breathing, 4-7-8, sama vritti, nadi shodhana, pranayama, relaxation, breathing timer, Vydokh, выдох, breathing app, meditation app"
     />
     <meta name="author" content="Artur Basak" />
     <meta name="creator" content="Artur Basak" />
@@ -71,6 +78,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <link rel="preload" as="image" href="/original-icon-removebg-preview.png" />
     <link rel="mask-icon" href="/favicon.svg" color="#4a8fc9" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />

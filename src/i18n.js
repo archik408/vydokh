@@ -39,6 +39,18 @@ const SOURCES = {
     name: 'PMC (NIH)',
     url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC4097918/',
   },
+  pmcResonanceGuide: {
+    name: 'PMC (resonance)',
+    url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7578229/',
+  },
+  pmcResonanceStudy: {
+    name: 'PMC (RF breathing)',
+    url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC5575449/',
+  },
+  harvardSlowBreathing: {
+    name: 'Harvard Health',
+    url: 'https://www.health.harvard.edu/preventive-care/breathing-exercises-to-lower-your-blood-pressure',
+  },
 }
 
 export const LOCALES = {
@@ -143,6 +155,19 @@ export const LOCALES = {
         howToUse:
           'Слева выберите круглую кнопку без подписи — режим равного дыхания (sama vritti). Шар плавно растёт на вдохе и сжимается на выдохе.',
         sources: [SOURCES.nccih, SOURCES.clevelandDiaphragm, SOURCES.harvardDiaphragm],
+      },
+      coherent: {
+        label: 'Когерентное дыхание',
+        title: 'Когерентное дыхание (резонанс)',
+        what:
+          'Равные фазы примерно по 5,5 с — около 5–6 циклов в минуту. Механика та же, что у равного дыхания (живот, без жёстких пауз), но темп медленнее: 4/4 — это sama vritti, а 5,5/5,5 ближе к «резонансному» ритму для HRV.',
+        why:
+          'Замедление дыхания до ~5–6 циклов в минуту может сильнее синхронизировать дыхание и колебания пульса (барорефлекс / HRV), чем более быстрый равный ритм.',
+        helps:
+          'Практика может помочь успокоиться и поддержать вариабельность сердечного ритма. Индивидуальный «резонансный» темп часто лежит в диапазоне 4,5–6,5 циклов в минуту; 5,5 — удобная стартовая точка. Это не заменяет медицинскую помощь.',
+        howToUse:
+          'Слева выберите кнопку с иконкой пульса и подписью «5.5». Шар плавно растёт на вдохе и сжимается на выдохе по циклу 5,5 / 5,5 с.',
+        sources: [SOURCES.pmcResonanceGuide, SOURCES.pmcResonanceStudy, SOURCES.harvardSlowBreathing],
       },
       anb: {
         label: 'Попеременное дыхание ноздрями',
@@ -261,6 +286,19 @@ export const LOCALES = {
           'On the left rail, tap the plain circle button — equal breathing (sama vritti) mode. The orb will smoothly grow on inhale and shrink on exhale.',
         sources: [SOURCES.nccih, SOURCES.clevelandDiaphragm, SOURCES.harvardDiaphragm],
       },
+      coherent: {
+        label: 'Coherent breathing',
+        title: 'Coherent breathing (resonance)',
+        what:
+          'Equal phases of about 5.5 seconds — roughly 5–6 cycles per minute. The mechanics match equal breathing (belly, no strict holds), but the pace is slower: 4/4 is sama vritti, while 5.5/5.5 sits nearer the “resonance” rhythm used for HRV practice.',
+        why:
+          'Slowing to about 5–6 breaths per minute can more strongly couple breath and heart-rate oscillations (baroreflex / HRV) than a faster equal rhythm.',
+        helps:
+          'The practice may help you feel calmer and support heart-rate variability. An individual’s resonance rate often falls between 4.5 and 6.5 breaths per minute; 5.5 is a practical starting point. This is not a substitute for medical care.',
+        howToUse:
+          'On the left rail, tap the heart-pulse icon labeled “5.5”. The orb will smoothly grow on inhale and shrink on exhale in a 5.5 / 5.5 s cycle.',
+        sources: [SOURCES.pmcResonanceGuide, SOURCES.pmcResonanceStudy, SOURCES.harvardSlowBreathing],
+      },
       anb: {
         label: 'Alternate nostril breathing',
         title: 'Alternate nostril breathing',
@@ -282,6 +320,7 @@ export const BREATH_MODE_META = [
   { id: 'box', caption: '4×4', icon: 'box' },
   { id: '478', caption: '4-7-8', icon: 'timer' },
   { id: 'deep', caption: '', icon: 'circle' },
+  { id: 'coherent', caption: '5.5', icon: 'heart-pulse' },
 ]
 
 export const GUIDE_TECHNIQUE_META = [

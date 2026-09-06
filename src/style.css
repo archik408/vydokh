@@ -53,6 +53,11 @@
   --breath-ease: cubic-bezier(0.45, 0.05, 0.55, 0.95);
 }
 
+[data-breath="coherent"] {
+  --breath-duration: 11s;
+  --breath-ease: cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
 [data-breath="box"] {
   --breath-duration: 16s;
   --breath-ease: linear;

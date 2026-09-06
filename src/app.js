@@ -12,6 +12,7 @@ import {
   Box,
   Timer,
   Circle,
+  HeartPulse,
   ArrowLeft,
   Download,
   X,
@@ -33,14 +34,14 @@ if ('serviceWorker' in navigator) {
   registerSW({ immediate: true })
 }
 
-const ICONS = { Waves, TreePine, Sun, Wind, Moon, Play, Square, Box, Timer, Circle, ArrowLeft, Download, X }
+const ICONS = { Waves, TreePine, Sun, Wind, Moon, Play, Square, Box, Timer, Circle, HeartPulse, ArrowLeft, Download, X }
 
 const THEME_KEY = 'vydokh-theme'
 const ELEMENT_KEY = 'vydokh-element'
 const MINUTES_KEY = 'vydokh-minutes'
 const BREATH_KEY = 'vydokh-breath'
 const LANG_KEY = 'vydokh-lang'
-const DEFAULT_ELEMENT = 'air'
+const DEFAULT_ELEMENT = 'water'
 const DEFAULT_MINUTES = 5
 const DEFAULT_BREATH = 'deep'
 const MINUTES_OPTIONS = [5, 10, 15, 20]
@@ -53,19 +54,10 @@ const prefersReducedMotion = () => {
   }
 }
 
-const prefersDarkScheme = () => {
-  try {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-  } catch {
-    return false
-  }
-}
-
 function detectLang() {
   const stored = storageGet(LANG_KEY)
   if (stored === 'ru' || stored === 'en') return stored
-  const navLang = navigator.language || ''
-  return navLang.toLowerCase().startsWith('ru') ? 'ru' : 'en'
+  return 'ru'
 }
 
 let lang = detectLang()
@@ -492,7 +484,7 @@ function initTheme() {
     applyTheme(stored)
     return
   }
-  applyTheme(prefersDarkScheme() ? 'dark' : 'light')
+  applyTheme('dark')
 }
 
 function initElement() {
