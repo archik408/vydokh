@@ -198,6 +198,8 @@ export function renderGuideView(t, sourceLinks) {
         </section>
 
         ${techniqueSections}
+
+        <p class="guide-disclaimer">${guide.disclaimer}</p>
       </div>
     </main>
   `

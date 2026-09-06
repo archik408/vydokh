@@ -488,6 +488,13 @@ body {
   margin: 0 0.15rem;
 }
 
+.guide-disclaimer {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--fg-muted);
+}
+
 ::view-transition-old(page),
 ::view-transition-new(page) {
   animation-duration: 0.35s;

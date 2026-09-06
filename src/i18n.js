@@ -95,6 +95,8 @@ export const LOCALES = {
         howToUse: 'Как включить в приложении',
         sources: 'Источники',
       },
+      disclaimer:
+        'Материал носит информационный характер и не заменяет консультацию врача.',
     },
     elements: {
       water: 'Вода',
@@ -130,29 +132,29 @@ export const LOCALES = {
         sources: [SOURCES.cleveland478, SOURCES.weil478],
       },
       deep: {
-        label: 'Глубокое дыхание',
-        title: 'Глубокое диафрагмальное дыхание',
+        label: 'Равное дыхание',
+        title: 'Равное дыхание',
         what:
-          'Плавный полный вдох и такой же спокойный выдох без жёстких пауз. Фокус — на работе диафрагмы и мягком движении живота.',
+          'Плавный вдох и такой же по длительности спокойный выдох без жёстких пауз — «равный ритм» (sama vritti). Дышите животом, как в разделе «Перед началом».',
         why:
           'Это базовая техника релаксации: она замедляет пульс и поддерживает более полный газообмен.',
         helps:
           'Подходит для ежедневного снижения стресса, восстановления после напряжённого дня и как мягкая разминка перед другими техниками.',
         howToUse:
-          'Слева выберите круглую кнопку без подписи — режим глубокого дыхания. Шар плавно растёт на вдохе и сжимается на выдохе.',
+          'Слева выберите круглую кнопку без подписи — режим равного дыхания (sama vritti). Шар плавно растёт на вдохе и сжимается на выдохе.',
         sources: [SOURCES.nccih, SOURCES.clevelandDiaphragm, SOURCES.harvardDiaphragm],
       },
       anb: {
         label: 'Попеременное дыхание ноздрями',
         title: 'Попеременное дыхание ноздрями',
         what:
-          'Вдох через одну ноздрю, выдох через другую, затем наоборот. Свободную ноздрю мягко закрывают пальцем. Ритм в приложении тот же, что у глубокого дыхания: плавный вдох и такой же спокойный выдох.',
+          'Вдох через одну ноздрю, выдох через другую, затем наоборот. Свободную ноздрю мягко закрывают пальцем. В приложении это делается в том же режиме, что и sama vritti: плавный вдох и такой же спокойный выдох.',
         why:
           'Техника удерживает внимание на дыхании и по очереди задействует обе стороны носового потока. В традиции йоги её связывают с «очищением каналов» (nadi shodhana / nadi shuddhi).',
         helps:
-          'Cleveland Clinic отмечает, что практика может помочь успокоиться, поддержать сердечно-дыхательное самочувствие и вернуть ощущение баланса. В исследовании International Journal of Yoga после nadi shuddhi у тренированных участников снижались показатели пульса и давления по сравнению с обычным дыханием.',
+          'Практика может помочь успокоиться, вернуть ощущение баланса и иногда повысить ясность внимания. В небольшом исследовании International Journal of Yoga у йога-тренированных участников после практики nadi shuddhi снижались показатели пульса и давления по сравнению с обычным дыханием.',
         howToUse:
-          'Слева выберите ту же круглую кнопку, что и для глубокого дыхания. Следуйте шару: на росте — вдох через левую ноздрю, на сжатии — выдох через правую; затем вдох справа и выдох слева. Если заложен нос или есть заболевания лёгких или сердца, сначала посоветуйтесь с врачом.',
+          'Слева выберите ту же круглую кнопку, что и для равного дыхания (sama vritti) — режим шара тот же (плавный вдох / выдох). Отличие только в технике руками: на росте шара — вдох через левую ноздрю, на сжатии — выдох через правую; затем наоборот. Если заложен нос или есть заболевания лёгких или сердца, сначала посоветуйтесь с врачом.',
         sources: [SOURCES.clevelandAnb, SOURCES.pmcAnb],
       },
     },
@@ -210,6 +212,8 @@ export const LOCALES = {
         howToUse: 'How to use it in the app',
         sources: 'Sources',
       },
+      disclaimer:
+        'This material is for information only and does not replace medical advice.',
     },
     elements: {
       water: 'Water',
@@ -245,29 +249,29 @@ export const LOCALES = {
         sources: [SOURCES.cleveland478, SOURCES.weil478],
       },
       deep: {
-        label: 'Deep breathing',
-        title: 'Deep diaphragmatic breathing',
+        label: 'Equal breathing',
+        title: 'Equal breathing',
         what:
-          'A smooth full inhale and an equally calm exhale without strict holds. Focus on the diaphragm and a soft belly movement.',
+          'A smooth inhale and an equally long calm exhale without strict holds — “equal rhythm” (sama vritti). Breathe with the belly as described in “Before you begin”.',
         why:
           'This is a foundational relaxation technique: it slows the pulse and supports fuller gas exchange.',
         helps:
           'Good for daily stress relief, unwinding after a tense day, and as a gentle warm-up before other techniques.',
         howToUse:
-          'On the left rail, tap the plain circle button — deep breathing mode. The orb will smoothly grow on inhale and shrink on exhale.',
+          'On the left rail, tap the plain circle button — equal breathing (sama vritti) mode. The orb will smoothly grow on inhale and shrink on exhale.',
         sources: [SOURCES.nccih, SOURCES.clevelandDiaphragm, SOURCES.harvardDiaphragm],
       },
       anb: {
         label: 'Alternate nostril breathing',
         title: 'Alternate nostril breathing',
         what:
-          'Inhale through one nostril, exhale through the other, then reverse. Gently close the unused nostril with a finger. The app rhythm is the same as deep breathing: a smooth inhale and an equally calm exhale.',
+          'Inhale through one nostril, exhale through the other, then reverse. Gently close the unused nostril with a finger. In the app this uses the same mode as sama vritti: a smooth inhale and an equally calm exhale.',
         why:
           'The practice keeps attention on the breath and alternates airflow through each nostril. In yoga it is often called nadi shodhana or nadi shuddhi — “channel-cleansing” breath.',
         helps:
-          'Cleveland Clinic notes that it may help you feel calmer, support cardiorespiratory wellbeing, and restore a sense of balance. In an International Journal of Yoga study, nadi shuddhi was followed by lower heart-rate and blood-pressure measures versus normal breathing in yoga-trained participants.',
+          'The practice may help you feel calmer, restore a sense of balance, and sometimes sharpen mental clarity. In a small International Journal of Yoga study, yoga-trained participants showed lower heart-rate and blood-pressure measures after nadi shuddhi versus normal breathing.',
         howToUse:
-          'On the left rail, tap the same plain circle used for deep breathing. Follow the orb: as it grows, inhale through the left nostril; as it shrinks, exhale through the right; then inhale right and exhale left. If you have a blocked nose or a lung or heart condition, check with a clinician first.',
+          'On the left rail, tap the same plain circle used for equal breathing (sama vritti) — the orb mode is the same (smooth inhale / exhale). The difference is only in hand technique: as the orb grows, inhale through the left nostril; as it shrinks, exhale through the right; then reverse. If you have a blocked nose or a lung or heart condition, check with a clinician first.',
         sources: [SOURCES.clevelandAnb, SOURCES.pmcAnb],
       },
     },
