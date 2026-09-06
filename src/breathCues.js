@@ -6,7 +6,8 @@
  */
 
 const DOT_MS = 48
-const EXHALE_CHUNK_MS = 4000
+/** Short exhale ticks: continuous feel, but Stop can abort within one pulse (Android quirk). */
+const EXHALE_PULSE_MS = 80
 const INHALE_GAP_MIN_MS = 72
 const INHALE_GAP_MAX_MS = 300
 const INHALE_PULSE_MIN = 8
@@ -29,6 +30,9 @@ let sessionAudioActive = false
 let visibilityBound = false
 /** @type {Array<{ stop: (when?: number) => void, gain?: GainNode }>} */
 let activeSources = []
+/** Bumps on stop so in-flight exhale vibe timers bail out. */
+let vibeToken = 0
+let vibeTimer = 0
 
 function canVibrate() {
   return typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function'
@@ -100,19 +104,36 @@ function buildInhalePattern(times) {
   return pattern
 }
 
-function buildExhalePattern(durationMs) {
-  const ms = Math.max(DOT_MS, Math.round(durationMs))
-  if (ms <= EXHALE_CHUNK_MS) return [ms]
+/** Sparse eased dots — distinct from continuous exhale. Returns pulse times for audio. */
+function runInhaleVibrate(durationMs) {
+  stopVibrate()
+  const times = buildInhalePulseTimes(durationMs)
+  if (canVibrate()) vibrate(buildInhalePattern(times))
+  return times
+}
 
-  const pattern = []
-  let left = ms
-  while (left > 0) {
-    const chunk = Math.min(EXHALE_CHUNK_MS, left)
-    pattern.push(chunk)
-    left -= chunk
-    if (left > 0) pattern.push(0)
+/**
+ * Dense short pulses ≈ continuous exhale vibe (unlike sparse inhale dots).
+ * Driven from JS so Stop can abort without relying on vibrate(0) canceling a long pulse.
+ */
+function runExhaleVibrate(durationMs) {
+  stopVibrate()
+  if (!canVibrate()) return
+
+  const token = vibeToken
+  const endAt = performance.now() + Math.max(DOT_MS, Math.round(durationMs))
+
+  const tick = () => {
+    if (token !== vibeToken) return
+    const left = endAt - performance.now()
+    if (left <= 0) return
+
+    const pulse = Math.min(EXHALE_PULSE_MS, Math.ceil(left))
+    vibrate(pulse)
+    vibeTimer = window.setTimeout(tick, pulse)
   }
-  return pattern
+
+  tick()
 }
 
 function ensureAudio() {
@@ -205,7 +226,18 @@ function vibrate(pattern) {
 }
 
 function stopVibrate() {
-  vibrate(0)
+  vibeToken += 1
+  if (vibeTimer) {
+    clearTimeout(vibeTimer)
+    vibeTimer = 0
+  }
+  if (!canVibrate()) return
+  try {
+    navigator.vibrate(0)
+    navigator.vibrate([])
+  } catch {
+    /* unsupported / blocked */
+  }
 }
 
 function schedulePulse(ctx, when, durationSec, freq) {
@@ -331,8 +363,7 @@ export function playPhaseCues(phase, durationMs) {
   if (phase === 'hold') return
 
   if (phase === 'inhale') {
-    const times = buildInhalePulseTimes(durationMs)
-    vibrate(buildInhalePattern(times))
+    const times = runInhaleVibrate(durationMs)
     void prepareAudioGraph().then((ctx) => {
       if (!ctx || !sessionAudioActive) return
       scheduleInhaleAudio(ctx, times)
@@ -341,7 +372,7 @@ export function playPhaseCues(phase, durationMs) {
   }
 
   if (phase === 'exhale') {
-    vibrate(buildExhalePattern(durationMs))
+    runExhaleVibrate(durationMs)
     void prepareAudioGraph().then((ctx) => {
       if (!ctx || !sessionAudioActive) return
       scheduleExhaleAudio(ctx, durationMs)

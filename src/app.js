@@ -153,7 +153,7 @@ function announceStatus(message) {
 
 function focusMain() {
   const main = document.querySelector('#main-content')
-  if (main) main.focus()
+  if (main) main.focus({ preventScroll: true })
 }
 
 function bindChrome() {
@@ -416,10 +416,10 @@ function applyLocaleTexts() {
 }
 
 function applyLang(next) {
+  if (state === 'running') return
   lang = next === 'en' ? 'en' : 'ru'
   t = LOCALES[lang]
   storageSet(LANG_KEY, lang)
-  if (state === 'running') stop(false)
   renderView()
   applyLocaleTexts()
 }
@@ -457,6 +457,7 @@ function applyMinutes(value) {
 }
 
 function applyBreath(id) {
+  if (state === 'running') return
   const valid = BREATH_MODE_META.some((m) => m.id === id)
   currentBreathId = valid ? id : DEFAULT_BREATH
   document.documentElement.dataset.breath = currentBreathId
@@ -530,6 +531,10 @@ function renderSession() {
   minuteButtons.forEach((btn) => {
     btn.disabled = running
   })
+  breathButtons.forEach((btn) => {
+    btn.disabled = running
+  })
+  if (langToggle) langToggle.disabled = running
 }
 
 function tick() {
