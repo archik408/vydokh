@@ -76,6 +76,8 @@ export const LOCALES = {
     sessionSettings: 'Настройки сессии',
     duration: 'Длительность',
     minutesLabel: (m) => `${m} минут`,
+    decreaseMinute: 'Минус одна минута',
+    increaseMinute: 'Плюс одна минута',
     breathMode: 'Режим дыхания',
     colorElement: 'Стихия цвета',
     author: 'Artur Basak',
@@ -83,7 +85,7 @@ export const LOCALES = {
     authorHref: 'https://arturbasak.dev',
     installApp: 'Установить',
     installAppAria: 'Установить приложение Vydokh',
-    installIOSHint: 'Установите приложение: «Поделиться» → Нажмите «Добавить на главный экран» / «Домой»',
+    installIOSHint: 'Установите приложение: <i data-lucide="share" class="install-ios-inline-icon" aria-hidden="true"></i>«Поделиться» → Нажмите <i data-lucide="square-plus" class="install-ios-inline-icon" aria-hidden="true"></i>«Добавить на главный экран» / «Домой»',
     installDismiss: 'Закрыть подсказку об установке',
     readInstructions: 'Перед началом прочтите <span class="guide-link-word">инструкцию</span>',
     guide: {
@@ -92,7 +94,7 @@ export const LOCALES = {
       app: {
         title: 'О приложении Vydokh',
         body:
-          'Vydokh — спокойная практика осознанного дыхания. На главном экране слева можно выбрать длительность сессии — 5, 10, 15 или 20 минут. Справа — цветовую гамму, связанную с природными стихиями: вода, земля, солнце и воздух. Многие культуры связывают их с внутренней силой и опорой — выберите ту, что откликается сейчас, и пульсирующий шар подстроится под её ритм и оттенок.',
+          'Vydokh — спокойная практика осознанного дыхания. На главном экране слева можно выбрать длительность сессии — 5, 10 или 15 минут, а рядом с таймером — менять её по минуте (от 1 до 30). Справа — цветовую гамму, связанную с природными стихиями: вода, земля, солнце и воздух. Многие культуры связывают их с внутренней силой и опорой — выберите ту, что откликается сейчас, и пульсирующий шар подстроится под её ритм и оттенок.',
       },
       beforeBegin: {
         title: 'Перед началом',
@@ -206,6 +208,8 @@ export const LOCALES = {
     sessionSettings: 'Session settings',
     duration: 'Duration',
     minutesLabel: (m) => `${m} minutes`,
+    decreaseMinute: 'Decrease by one minute',
+    increaseMinute: 'Increase by one minute',
     breathMode: 'Breathing mode',
     colorElement: 'Color element',
     author: 'Artur Basak',
@@ -213,7 +217,7 @@ export const LOCALES = {
     authorHref: 'https://arturbasak.dev',
     installApp: 'Install',
     installAppAria: 'Install Vydokh app',
-    installIOSHint: 'Install: tap Share, then Add to Home Screen',
+    installIOSHint: 'Install: tap <i data-lucide="share" class="install-ios-inline-icon" aria-hidden="true"></i>Share, then <i data-lucide="square-plus" class="install-ios-inline-icon" aria-hidden="true"></i>Add to Home Screen',
     installDismiss: 'Dismiss install hint',
     readInstructions: 'Read the <span class="guide-link-word">instructions</span> before you begin',
     guide: {
@@ -222,7 +226,7 @@ export const LOCALES = {
       app: {
         title: 'About Vydokh',
         body:
-          'Vydokh is a calm mindful breathing practice. On the home screen, use the left rail to pick session length — 5, 10, 15, or 20 minutes. On the right, choose a color palette tied to natural elements: water, earth, sun, and air. Many traditions link them to inner strength and grounding — pick what resonates now, and the pulsing orb will match its rhythm and hue.',
+          'Vydokh is a calm mindful breathing practice. On the home screen, use the left rail to pick session length — 5, 10, or 15 minutes — or adjust minute by minute beside the timer (1 to 30). On the right, choose a color palette tied to natural elements: water, earth, sun, and air. Many traditions link them to inner strength and grounding — pick what resonates now, and the pulsing orb will match its rhythm and hue.',
       },
       beforeBegin: {
         title: 'Before you begin',

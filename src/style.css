@@ -320,8 +320,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .view-page-guide {
@@ -389,8 +389,24 @@ body {
 .guide-logo {
   display: block;
   width: min(36vw, 6.5rem);
-  height: auto;
+  aspect-ratio: 1;
   margin: 0.25rem 0 0;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  color: transparent;
+}
+
+.guide-logo-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transition: opacity 450ms ease;
+}
+
+.guide-logo-img.is-loaded {
+  opacity: 1;
 }
 
 .guide-content {
@@ -549,6 +565,13 @@ body {
   }
 }
 
+.timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .timer-digits {
   font-variant-numeric: tabular-nums;
   background: linear-gradient(135deg, var(--timer-from), var(--timer-to));
@@ -560,11 +583,63 @@ body {
   padding: 0 8px;
 }
 
+.timer-adjusts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.timer-adjust {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px dashed var(--accent);
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: color 200ms ease, opacity 200ms ease, transform 150ms ease, border-color 200ms ease;
+}
+
+.timer-adjust:hover:not(:disabled) {
+  color: var(--accent-hover, var(--accent));
+}
+
+.timer-adjust:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.timer-adjust:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.timer-adjust:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.timer-adjust-icon,
+.timer-adjust svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  stroke-width: 4px;
+}
+
 @media (forced-colors: active) {
   .timer-digits {
     background: none;
     -webkit-background-clip: unset;
     background-clip: unset;
+    color: CanvasText;
+  }
+
+  .timer-adjust {
     color: CanvasText;
   }
 }
@@ -897,6 +972,15 @@ body {
   line-height: 1.45;
 }
 
+.install-ios-inline-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.15em;
+  vertical-align: -0.1em;
+  color: var(--fg);
+}
+
 .install-ios-dismiss {
   display: inline-flex;
   flex-shrink: 0;
@@ -938,13 +1022,16 @@ body {
   .guide-link,
   .guide-back,
   .site-footer a,
-  .install-btn {
+  .install-btn,
+  .timer-adjust,
+  .guide-logo-img {
     transition: none;
   }
 
   .rail-btn:active:not(:disabled),
   .play-btn:active,
-  #stop-btn:active {
+  #stop-btn:active,
+  .timer-adjust:active:not(:disabled) {
     transform: none;
   }
 

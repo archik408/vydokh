@@ -16,6 +16,10 @@ import {
   ArrowLeft,
   Download,
   X,
+  Plus,
+  Minus,
+  Share,
+  SquarePlus,
 } from 'lucide'
 import { LOCALES, BREATH_MODE_META, ELEMENT_META, sourceLinks } from './i18n.js'
 import { renderShell, renderHomeView, renderGuideView } from './views.js'
@@ -34,7 +38,26 @@ if ('serviceWorker' in navigator) {
   registerSW({ immediate: true })
 }
 
-const ICONS = { Waves, TreePine, Sun, Wind, Moon, Play, Square, Box, Timer, Circle, HeartPulse, ArrowLeft, Download, X }
+const ICONS = {
+  Waves,
+  TreePine,
+  Sun,
+  Wind,
+  Moon,
+  Play,
+  Square,
+  Box,
+  Timer,
+  Circle,
+  HeartPulse,
+  ArrowLeft,
+  Download,
+  X,
+  Plus,
+  Minus,
+  Share,
+  SquarePlus,
+}
 
 const THEME_KEY = 'vydokh-theme'
 const ELEMENT_KEY = 'vydokh-element'
@@ -44,7 +67,9 @@ const LANG_KEY = 'vydokh-lang'
 const DEFAULT_ELEMENT = 'water'
 const DEFAULT_MINUTES = 5
 const DEFAULT_BREATH = 'deep'
-const MINUTES_OPTIONS = [5, 10, 15, 20]
+const MINUTES_OPTIONS = [5, 10, 15]
+const MIN_MINUTES = 1
+const MAX_MINUTES = 30
 
 const prefersReducedMotion = () => {
   try {
@@ -78,6 +103,9 @@ let currentPhase = null
 let pendingFocusTarget = null
 
 let timerEl
+let minutesDecBtn
+let minutesIncBtn
+let minutesAdjustsEl
 let sessionStatusEl
 let playBtn
 let stopBtn
@@ -211,6 +239,9 @@ function bindChrome() {
 
 function bindHome() {
   timerEl = document.querySelector('#timer')
+  minutesDecBtn = document.querySelector('#minutes-dec')
+  minutesIncBtn = document.querySelector('#minutes-inc')
+  minutesAdjustsEl = document.querySelector('.timer-adjusts')
   sessionStatusEl = document.querySelector('#session-status')
   playBtn = document.querySelector('#play-btn')
   stopBtn = document.querySelector('#stop-btn')
@@ -224,6 +255,8 @@ function bindHome() {
 
   playBtn.addEventListener('click', start)
   stopBtn.addEventListener('click', () => stop(false))
+  minutesDecBtn?.addEventListener('click', () => applyMinutes(minutes - 1))
+  minutesIncBtn?.addEventListener('click', () => applyMinutes(minutes + 1))
 
   updateOrbIcon()
   renderSession()
@@ -235,6 +268,23 @@ function bindHome() {
     stopBtn.focus()
     pendingFocusTarget = null
   }
+}
+
+function enhanceGuideLogo() {
+  const img = document.querySelector('.guide-logo-img')
+  if (!img) return
+
+  const markLoaded = () => {
+    img.classList.add('is-loaded')
+  }
+
+  if (img.complete && img.naturalWidth > 0) {
+    markLoaded()
+    return
+  }
+
+  img.addEventListener('load', markLoaded, { once: true })
+  img.addEventListener('error', markLoaded, { once: true })
 }
 
 function renderView() {
@@ -253,6 +303,7 @@ function renderView() {
     cancelAnimationFrame(rafId)
     rafId = 0
     if (state === 'running') stop(false)
+    enhanceGuideLogo()
     focusMain()
   }
 
@@ -367,7 +418,10 @@ function applyLocaleTexts() {
     installBtn.querySelector('[data-i18n="installApp"]').textContent = t.installApp
     installBtn.setAttribute('aria-label', t.installAppAria)
   }
-  if (installIOSText) installIOSText.textContent = t.installIOSHint
+  if (installIOSText) {
+    installIOSText.innerHTML = t.installIOSHint
+    refreshIcons(installIOSText)
+  }
   if (installIOSDismiss) installIOSDismiss.setAttribute('aria-label', t.installDismiss)
   if (langCode) langCode.textContent = t.langCode
   if (langToggle) langToggle.setAttribute('aria-label', t.langToggle)
@@ -391,6 +445,8 @@ function applyLocaleTexts() {
   minuteButtons.forEach((btn) => {
     btn.setAttribute('aria-label', t.minutesLabel(Number(btn.dataset.minutes)))
   })
+  if (minutesDecBtn) minutesDecBtn.setAttribute('aria-label', t.decreaseMinute)
+  if (minutesIncBtn) minutesIncBtn.setAttribute('aria-label', t.increaseMinute)
 
   breathButtons.forEach((btn) => {
     const mode = getModeCopy(btn.dataset.breathId)
@@ -435,15 +491,26 @@ function applyElement(id) {
   updateThemeColorMeta()
 }
 
+function clampMinutes(value) {
+  const n = Math.round(Number(value))
+  if (!Number.isFinite(n)) return DEFAULT_MINUTES
+  return Math.min(MAX_MINUTES, Math.max(MIN_MINUTES, n))
+}
+
+function updateMinutesAdjustButtons() {
+  if (minutesDecBtn) minutesDecBtn.disabled = minutes <= MIN_MINUTES
+  if (minutesIncBtn) minutesIncBtn.disabled = minutes >= MAX_MINUTES
+}
+
 function applyMinutes(value) {
   if (state === 'running') return
-  const next = MINUTES_OPTIONS.includes(value) ? value : DEFAULT_MINUTES
-  minutes = next
+  minutes = clampMinutes(value)
   durationSec = minutes * 60
   remaining = durationSec
   storageSet(MINUTES_KEY, String(minutes))
 
   setRadioSelection(minuteButtons, (btn) => Number(btn.dataset.minutes) === minutes)
+  updateMinutesAdjustButtons()
 
   if (timerEl) timerEl.textContent = formatTime(remaining)
 }
@@ -495,7 +562,9 @@ function initElement() {
 
 function initMinutes() {
   const stored = Number(storageGet(MINUTES_KEY))
-  applyMinutes(MINUTES_OPTIONS.includes(stored) ? stored : DEFAULT_MINUTES)
+  const inRange =
+    Number.isFinite(stored) && stored >= MIN_MINUTES && stored <= MAX_MINUTES
+  applyMinutes(inRange ? stored : DEFAULT_MINUTES)
 }
 
 function initBreath() {
@@ -519,6 +588,8 @@ function renderSession() {
   breathGuide.hidden = !running
   breathGuide.classList.toggle('is-active', running && !prefersReducedMotion())
   if (guideLink) guideLink.hidden = running
+  if (minutesAdjustsEl) minutesAdjustsEl.hidden = running
+  if (!running) updateMinutesAdjustButtons()
 
   minuteButtons.forEach((btn) => {
     btn.disabled = running

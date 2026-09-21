@@ -1,6 +1,7 @@
 import { BREATH_MODE_META, ELEMENT_META, GUIDE_TECHNIQUE_META } from './i18n.js'
+import { GUIDE_LOGO_LQIP } from './guideLogoLqip.js'
 
-const MINUTES_OPTIONS = [5, 10, 15, 20]
+const MINUTES_OPTIONS = [5, 10, 15]
 
 export function renderShell() {
   return `
@@ -86,7 +87,17 @@ export function renderHomeView(t) {
   return `
     <main id="main-content" class="view-page view-page-home" tabindex="-1">
       <h1 class="sr-only">Vydokh</h1>
-      <p id="timer" class="timer-digits text-[clamp(4rem,20vw,7rem)] font-light leading-none select-none" aria-live="off" aria-atomic="true">5:00</p>
+      <div class="timer-block">
+        <p id="timer" class="timer-digits text-[clamp(4rem,20vw,7rem)] font-light leading-none select-none" aria-live="off" aria-atomic="true">5:00</p>
+        <div class="timer-adjusts">
+          <button type="button" id="minutes-dec" class="timer-adjust" aria-label="">
+            <i data-lucide="minus" class="timer-adjust-icon" aria-hidden="true"></i>
+          </button>
+          <button type="button" id="minutes-inc" class="timer-adjust" aria-label="">
+            <i data-lucide="plus" class="timer-adjust-icon" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
       <div id="session-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
       <div class="flex flex-col items-center gap-5">
@@ -174,15 +185,20 @@ export function renderGuideView(t, sourceLinks) {
           <span>${guide.back}</span>
         </a>
         <h1 class="guide-page-title" id="page-heading">${guide.pageTitle}</h1>
-        <img
-          src="/original-icon-removebg-preview.png"
-          alt=""
+        <div
           class="guide-logo"
-          width="128"
-          height="128"
-          decoding="async"
+          style="background-image:url(&quot;${GUIDE_LOGO_LQIP}&quot;);background-size:cover;background-position:50% 50%;background-repeat:no-repeat"
           aria-hidden="true"
-        />
+        >
+          <img
+            class="guide-logo-img"
+            src="/original-icon-removebg-preview.png"
+            alt=""
+            width="128"
+            height="128"
+            decoding="async"
+          />
+        </div>
       </div>
 
       <div class="guide-content">
